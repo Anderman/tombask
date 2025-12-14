@@ -1,1 +1,12 @@
 .env
+secrets.h
+# PlatformIO build output
+.pio/
+.pioenvs/
+.piolibdeps/
+
+# VS Code / PlatformIO IDE cache
+.vscode/.browse.c_cpp.db*
+.vscode/c_cpp_properties.json
+.vscode/launch.json
+.vscode/ipch/
