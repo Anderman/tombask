@@ -11,6 +11,8 @@
 #include "wifiSetup.h"
 #include "rs485/rs485.h"
 #include "storage/storage.h"
+#include "webui/webui.h"
+#include "rs485/settings.h"
 
 // ==== GLOBALS ====
 WiFiClient espClient;
@@ -19,37 +21,35 @@ unsigned long lastPublish = 0;
 
 void setup()
 {
-  loadDeviceId();
   Serial.begin(115200);
+  delay(2000);
+  Serial.println();
+  Serial.println("[tombask] boot");
+  loadConfig();
+  Serial.print("[tombask] deviceId=");
+  Serial.println(deviceId);
   setupWifi();
+  Serial.print("[tombask] wifi status=");
+  Serial.println(WiFi.status());
+  if (WiFi.status() == WL_CONNECTED)
+  {
+    Serial.print("[tombask] ip=");
+    Serial.println(WiFi.localIP());
+  }
+  setupWebUi();
+  Serial.println("[tombask] webui started (http://<ip>/)");
   setupOTA();
   setupMtqq();
   setupRs485();
+  setupWifiConfig();
+  Serial.println("[tombask] setup done");
 }
 
 void loop()
 {
   ArduinoOTA.handle();
+  webUiLoop();
+  wifiManagerLoop();
   mqttLoop();
   rs485Loop();
-  
-  // unsigned long now = millis();
-  // if (now - lastPublish > 10000)
-  // { // every 10s
-  //   lastPublish = now;
-
-  //   float t1 = readTemperature1();
-  //   float t2 = readTemperature2();
-
-  //   char topic[64];
-  //   char payload[32];
-
-  //   snprintf(topic, sizeof(topic), "%s/t1", MQTT_BASE_TOPIC);
-  //   dtostrf(t1, 0, 1, payload);
-  //   mqttClient.publish(topic, payload, true);
-
-  //   snprintf(topic, sizeof(topic), "%s/t2", MQTT_BASE_TOPIC);
-  //   dtostrf(t2, 0, 1, payload);
-  //   mqttClient.publish(topic, payload, true);
-  // }
 }

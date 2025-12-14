@@ -51,5 +51,5 @@ void write_1c(const uint8_t *buffer)
 {
     Frame1c frame = previousFrame;
     frame.src = SRC;
-    frame.fan = previousFrame.fan | static_cast<uint8_t>(settings.druk_hoog.value);
+    frame.fan = previousFrame.fan | 0x80;
 }

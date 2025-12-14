@@ -6,20 +6,23 @@
 #include "rs485_25.h"
 #include "rs485_40.h"
 #include "rs485_3c.h"
+#include <webui/webLogger.h>
 
-static HardwareSerial RS485(2);
+// ESP32-C3 only has UART0/1 available via HardwareSerial (0/1)
+static HardwareSerial RS485(1);
 static uint8_t buffer[0x48];
 static int bufferPos = 0;
 static uint8_t length = 8;
 
 static bool verifyCrc(const uint8_t *data, size_t len);
 static void frameReader();
+static bool formatFrameLine(const uint8_t *data, size_t len, char *out, size_t outSize);
 
 void setupRs485()
 {
     buffer[0] = 0x7e;
     buffer[1] = 0x7e;
-    RS485.begin(9600, SERIAL_8N1, RX_PIN, TX_PIN); // RX=16, TX=17 (pas aan naar jouw hardware)
+    RS485.begin(9600, SERIAL_8N1, RX_PIN, TX_PIN);
 }
 
 void rs485Loop()
@@ -46,13 +49,10 @@ void rs485Loop()
             buffer[bufferPos++] = c;
             if (bufferPos == length)
             {
-                for (int i = 0; i < length; i++)
-                {
-                    Serial.print(buffer[i], HEX);
-                    Serial.print(" ");
-                }
-                bool crcOk = verifyCrc(buffer, length);
-                Serial.println(crcOk ? "OK" : "ERROR");
+                char line[3 * 0x48 + 32];
+                const bool crcOk = formatFrameLine(buffer, length, line, sizeof(line));
+                Serial.println(line);
+                webLoggerWriteLine(line);
                 if (crcOk)
                 {
                     if (buffer[2] == 0xf0 && buffer[3] == 0xf0)
@@ -98,7 +98,7 @@ static bool verifyCrc(const uint8_t *data, size_t len)
 
 static void frameReader()
 {
-    switch (length)
+    switch (buffer[5])
     {
     case 0x1c:
         return read_1c(buffer);
@@ -112,4 +112,27 @@ static void frameReader()
         return read_40(buffer);
     }
     Serial.println(String("Unknown frame length: ") + String(length, HEX));
+}
+static bool formatFrameLine(const uint8_t *data, size_t len, char *out, size_t outSize)
+{
+    if (!out || outSize == 0)
+        return false;
+
+    size_t pos = 0;
+
+    for (size_t i = 0; i < len && pos + 3 < outSize; i++)
+        pos += snprintf(out + pos, outSize - pos, "%02X ", data[i]);
+
+    if (pos > 0 && out[pos - 1] == ' ')
+        out[pos - 1] = '\0'; // laatste spatie weg
+    else if (pos == 0)
+        out[0] = '\0';
+
+    const bool crcOk = verifyCrc(data, len);
+
+    const size_t used = strlen(out);
+    if (used < outSize)
+        snprintf(out + used, outSize - used, " | CRC %s", crcOk ? "OK" : "ERROR");
+
+    return crcOk;
 }
