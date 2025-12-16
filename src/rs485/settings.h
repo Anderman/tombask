@@ -1,18 +1,26 @@
-struct SettingField {
-    float value;
-    const char* name;
-    const char* description;
-    const char* unit;
-    float min;
-    float max;
-    float step;
+#pragma once
+#include <stdint.h>
+
+struct SettingField
+{
+    const char *name;
+    const char *friendlyName;
+    const char *unit;
+    const char *type;
+    uint16_t min;
+    uint16_t max;
+    uint16_t step;
 };
 
-struct Settings {
+struct Settings
+{
     SettingField SetpointTemp;
     SettingField LegionellaTemp;
     SettingField Fan;
 };
-extern char deviceId[32];
 
-extern Settings settings; 
+extern char deviceIdStr[64];
+extern char deviceJson[128];
+extern Settings settings;
+extern void publishSettings();
+extern void ensureDeviceInfo();

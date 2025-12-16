@@ -1,6 +1,10 @@
 #pragma once
 #include <cstdint>
 
+// Device identifier used for MQTT topics + Home Assistant unique_id/device identifiers.
+// Stored in NVS and editable via Web UI.
+extern uint8_t deviceId;
+
 // Load/save all configuration from NVS (Preferences)
 void loadConfig();
 void saveConfig();
@@ -17,6 +21,3 @@ const char* getWifiPassword();
 
 void setMqttHost(const char* host);
 void setMqttPort(uint16_t port);
-void setWifiSsid(const char* ssid);
-// Set to "" to clear. For web UI: empty payload can be treated as "keep unchanged" at API layer.
-void setWifiPassword(const char* password);

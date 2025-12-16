@@ -1,40 +1,88 @@
 #include "settings.h"
 #include <globals.h>
+#include "storage/storage.h"
 Settings settings = {
-    .SetpointTemp = {53, "SetpointTemp", "Normal setpoint temperature for boiler operation", "°C", 40, 89, 1},
-    .LegionellaTemp = {70, "LegionellaTemp", "Legionella prevention temperature", "°C", 40, 89, 1},
-    .Fan = {0, "Fan", "Fan on/off", "bool", 0, 1, 1},
-    // ...andere velden indien nodig
+    .SetpointTemp = {"SetpointTemp", "Normal setpoint temperature for boiler operation", "°C", "number", 40, 89, 1},
+    .LegionellaTemp = {"LegionellaTemp", "Legionella prevention temperature", "°C", "number", 40, 89, 1},
+    .Fan = {"Fan", "Fan on/off", "bool", "switch", 0, 1, 1},
 };
-char deviceId[32] = "";
-void publish()
+
+
+char deviceIdStr[64];
+char deviceJson[128];
+static char topic[128];
+static char payload[512];
+static char uniqueId[64];
+static char cmdTopic[128];
+static char stateTopic[128];
+
+void ensureDeviceInfo();
+static void setupDiscoveryStrings(const char *name, const char *type);
+static void publishSwitchDiscovery(const SettingField &field);
+static void publishNumberDiscovery(const SettingField &field);
+
+void publishSettings()
 {
-    char device[128];
-    snprintf(device, sizeof(device), "{\"identifiers\":[\"tombask_%s\"],\"name\":\"Heat pomp boiler\",\"model\":\"ESP32\",\"manufacturer\":\"tsi/1001\"}", deviceId);
+    ensureDeviceInfo();
+    publishSwitchDiscovery(settings.Fan);
+    publishNumberDiscovery(settings.SetpointTemp);
+    publishNumberDiscovery(settings.LegionellaTemp);
 }
 
-void publishSwitchDiscovery(const SettingField &field)
+void ensureDeviceInfo()
 {
-    char topic[128];
-    const char *name = field.name;
-    char uniqueId[64];
-    snprintf(uniqueId, sizeof(uniqueId), "tombask_%s", name);
-    snprintf(topic, sizeof(topic), "homeassistant/switch/%s/config", uniqueId);
+    if (deviceIdStr[0] != '\0')
+        return;
+    snprintf(deviceIdStr, sizeof(deviceIdStr), "tombask%u", (unsigned)deviceId);
+    snprintf(deviceJson, sizeof(deviceJson), "{\"identifiers\":[\"%s\"],\"name\":\"Heat pomp boiler\",\"model\":\"ESP32\",\"manufacturer\":\"1001\"}", deviceIdStr);
+}
 
-    char payload[512];
+
+static void publishNumberDiscovery(const SettingField &field)
+{
+    setupDiscoveryStrings(field.name, field.type);
+
     snprintf(payload, sizeof(payload),
              "{"
              "\"name\":\"%s\","
              "\"unique_id\":\"%s\","
-             "\"command_topic\":\"homeassistant/switch/%s/set\","
-             "\"state_topic\":\"homeassistant/switch/%s/state\","
-             "\"payload_on\":\"ON\","
-             "\"payload_off\":\"OFF\","
-             "\"device_class\":\"switch\","
-             "\"device\":{\"identifiers\":[\"%s\"],\"name\":\"%s\",\"model\":\"ESP32\",\"manufacturer\":\"Jijzelf\"}"
+             "\"command_topic\":\"%s\","
+             "\"state_topic\":\"%s\","
+             "\"unit_of_measurement\":\"%s\","
+             "\"device\":%s,"
+             "\"min\":%u,"
+             "\"max\":%u,"
+             "\"step\":%u"
              "}",
-             name, uniqueId, uniqueId, uniqueId,
-             name, name);
+             field.friendlyName, uniqueId, cmdTopic, stateTopic, field.unit, deviceJson,
+             (unsigned)field.min, (unsigned)field.max, (unsigned)field.step);
 
     mqttClient.publish(topic, payload, true);
+}
+
+static void publishSwitchDiscovery(const SettingField &field)
+{
+    setupDiscoveryStrings(field.name, field.type);
+
+    snprintf(payload, sizeof(payload),
+             "{"
+             "\"name\":\"%s\","
+             "\"unique_id\":\"%s\","
+             "\"command_topic\":\"%s\","
+             "\"state_topic\":\"%s\","
+             "\"device\":%s,"
+             "\"payload_on\":\"ON\","
+             "\"payload_off\":\"OFF\""
+             "}",
+             field.friendlyName, uniqueId, cmdTopic, stateTopic, deviceJson);
+
+    mqttClient.publish(topic, payload, true);
+}
+
+static void setupDiscoveryStrings(const char *name, const char *type)
+{
+    snprintf(uniqueId, sizeof(uniqueId), "%s_%s", deviceIdStr, name);
+    snprintf(topic, sizeof(topic), "homeassistant/%s/%s/config", type, uniqueId);
+    snprintf(cmdTopic, sizeof(cmdTopic), "tombask/%s/%s/set", deviceIdStr, name);
+    snprintf(stateTopic, sizeof(stateTopic), "tombask/%s/%s/state", deviceIdStr, name);
 }
