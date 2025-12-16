@@ -11,7 +11,7 @@ export default defineConfig({
     assetsDir: 'assets',
     // Debug-friendly build (keep source maps, avoid minifier surprises)
     sourcemap: true,
-    minify: false,
+    minify: true,
     rollupOptions: {
       output: {
         entryFileNames: 'assets/app.js',

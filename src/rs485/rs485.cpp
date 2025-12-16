@@ -91,8 +91,8 @@ static bool verifyCrc(const uint8_t *data, size_t len)
 {
     if (len < 3)
         return false; // Minimaal 1 byte data + 2 bytes CRC
-    uint16_t receivedCrc = data[len - 2] | (data[len - 1] << 8);
-    uint16_t calculatedCrc = crc16_modbus(data, len - 2);
+    uint16_t receivedCrc = data[len - 3] | (data[len - 2] << 8);
+    uint16_t calculatedCrc = crc16_modbus(data, len - 3);
     return receivedCrc == calculatedCrc;
 }
 

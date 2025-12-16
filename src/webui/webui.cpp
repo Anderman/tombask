@@ -8,7 +8,6 @@
 #include <SPIFFS.h>
 
 #include "storage/storage.h"
-#include "rs485/settings.h"
 #include <WiFiManager.h>
 #include "webui/webLogger.h"
 
@@ -43,8 +42,8 @@ static void sendConfigJson()
     // NOTE: we intentionally do not return wifiPassword.
     char json[384];
     snprintf(json, sizeof(json),
-             "{\"deviceId\":\"%s\",\"mqttHost\":\"%s\",\"mqttPort\":%u}",
-             deviceId,
+             "{\"deviceId\":%u,\"mqttHost\":\"%s\",\"mqttPort\":%u}",
+             static_cast<unsigned>(deviceId),
              getMqttHost(),
              static_cast<unsigned>(getMqttPort()));
 
@@ -67,14 +66,11 @@ static void handlePostConfig()
         return;
     }
 
-    const char *newDeviceId = doc["deviceId"] | "";
+    const int newDeviceId = doc["deviceId"] | 1;
     const char *newMqttHost = doc["mqttHost"] | "";
     const uint16_t newMqttPort = static_cast<uint16_t>(doc["mqttPort"] | 0);
 
-    if (newDeviceId && newDeviceId[0] != '\0')
-    {
-        strlcpy(deviceId, newDeviceId, sizeof(deviceId));
-    }
+    deviceId = static_cast<uint8_t>(newDeviceId);
 
     if (newMqttHost && newMqttHost[0] != '\0')
     {

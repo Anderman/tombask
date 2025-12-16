@@ -39,7 +39,7 @@ struct __attribute__((packed)) Frame1c
     uint8_t a23;       // 00
 };
 
-Frame1c previousFrame;
+static Frame1c previousFrame;
 
 void read_1c(const uint8_t *buffer)
 {
