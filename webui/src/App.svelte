@@ -14,6 +14,8 @@
     deviceId: 1,
     mqttHost: '',
     mqttPort: 1883,
+    mqttUser: '',
+    mqttPass: '',
   };
 
   let logsEnabled = false;
@@ -39,6 +41,8 @@
         deviceId: Number(data.deviceId ?? 1),
         mqttHost: data.mqttHost ?? '',
         mqttPort: Number(data.mqttPort ?? 1883),
+        mqttUser: data.mqttUser ?? '',
+        mqttPass: '',
       };
     } catch (e) {
       error = e?.message ?? String(e);
@@ -56,7 +60,13 @@
         deviceId: Number(form.deviceId),
         mqttHost: form.mqttHost,
         mqttPort: Number(form.mqttPort),
+        mqttUser: form.mqttUser,
       };
+
+      // Only send password if user typed one (empty means "keep current")
+      if (String(form.mqttPass ?? '').length > 0) {
+        payload.mqttPass = form.mqttPass;
+      }
 
       const res = await fetch('/api/config', {
         method: 'POST',
@@ -69,6 +79,7 @@
       }
       ok = 'Configuration saved successfully';
       setTimeout(() => { ok = ''; }, 3000);
+      form.mqttPass = '';
     } catch (e) {
       error = e?.message ?? String(e);
     } finally {
@@ -165,6 +176,27 @@
           max="65535" 
           step="1" 
           bind:value={form.mqttPort}
+          disabled={saving || loading}
+        />
+      </label>
+
+      <label>
+        <span class="label-text">MQTT Username</span>
+        <input
+          bind:value={form.mqttUser}
+          placeholder="(optional)"
+          autocomplete="username"
+          disabled={saving || loading}
+        />
+      </label>
+
+      <label>
+        <span class="label-text">MQTT Password</span>
+        <input
+          type="password"
+          bind:value={form.mqttPass}
+          placeholder="Leave blank to keep"
+          autocomplete="current-password"
           disabled={saving || loading}
         />
       </label>

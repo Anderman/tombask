@@ -1,4 +1,4 @@
 #pragma once
 void setupWifi();
-void setupWifiConfig();
+void setupWifiConfigPage();
 void wifiManagerLoop();

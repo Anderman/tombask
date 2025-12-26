@@ -39,15 +39,17 @@ static const char *contentTypeForPath(const String &path)
 
 static void sendConfigJson()
 {
-    // NOTE: we intentionally do not return wifiPassword.
-    char json[384];
-    snprintf(json, sizeof(json),
-             "{\"deviceId\":%u,\"mqttHost\":\"%s\",\"mqttPort\":%u}",
-             static_cast<unsigned>(deviceId),
-             getMqttHost(),
-             static_cast<unsigned>(getMqttPort()));
+    // NOTE: we intentionally do not return mqttPass.
+    JsonDocument doc;
+    doc["deviceId"] = deviceId;
+    doc["mqttHost"] = getMqttHost();
+    doc["mqttPort"] = getMqttPort();
+    doc["mqttUser"] = getMqttUser();
+    doc["mqttPass"] = "";
 
-    server.send(200, "application/json", json);
+    String out;
+    serializeJson(doc, out);
+    server.send(200, "application/json", out);
 }
 
 static void handleGetConfig()
@@ -69,6 +71,16 @@ static void handlePostConfig()
     const int newDeviceId = doc["deviceId"] | 1;
     const char *newMqttHost = doc["mqttHost"] | "";
     const uint16_t newMqttPort = static_cast<uint16_t>(doc["mqttPort"] | 0);
+    const char *newMqttUser = doc["mqttUser"] | "";
+
+    const bool hasMqttPass = doc.containsKey("mqttPass");
+    const char *newMqttPass = doc["mqttPass"] | "";
+
+    if (newDeviceId < 1 || newDeviceId > 255)
+    {
+        server.send(400, "text/plain", "deviceId must be 1..255");
+        return;
+    }
 
     deviceId = static_cast<uint8_t>(newDeviceId);
 
@@ -80,6 +92,15 @@ static void handlePostConfig()
     if (newMqttPort != 0)
     {
         setMqttPort(newMqttPort);
+    }
+
+    // username: allow empty to clear
+    setMqttUser(newMqttUser);
+
+    // password: only update if provided (UI omits when left blank)
+    if (hasMqttPass && newMqttPass)
+    {
+        setMqttPassword(newMqttPass);
     }
 
     saveConfig();

@@ -3,10 +3,13 @@
 #include "rs485.h"
 #include "rs485_1c.h"
 #include "rs485_2d.h"
-#include "rs485_25.h"
+#include "rs485_25_5.h"
+#include "rs485_25_6.h"
 #include "rs485_40.h"
 #include "rs485_3c.h"
 #include <webui/webLogger.h>
+#include "sensors.h"
+#include "settings.h"
 
 // ESP32-C3 only has UART0/1 available via HardwareSerial (0/1)
 static HardwareSerial RS485(1);
@@ -17,7 +20,8 @@ static uint8_t length = 8;
 static bool verifyCrc(const uint8_t *data, size_t len);
 static void frameReader();
 static bool formatFrameLine(const uint8_t *data, size_t len, char *out, size_t outSize);
-
+static uint16_t crc16_modbus(const uint8_t *data, size_t len);
+static bool write_2d_next = false;
 void setupRs485()
 {
     buffer[0] = 0x7e;
@@ -52,15 +56,28 @@ void rs485Loop()
                 char line[3 * 0x48 + 32];
                 const bool crcOk = formatFrameLine(buffer, length, line, sizeof(line));
                 Serial.println(line);
-                webLoggerWriteLine(line);
+                if (buffer[3] == 0x01 && buffer[8] != 0x01)
+                    webLoggerWriteLine(line);
                 if (crcOk)
                 {
                     if (buffer[2] == 0xf0 && buffer[3] == 0xf0)
                     {
                         frameReader();
                     }
-                    if (buffer[2] == 0x02 && buffer[3] == 0xf0 && length == 0x04)
+                    if (ControlValueChanged && buffer[2] == 0x02 && buffer[3] == 0xf0 && buffer[5] == 0x04)
                     {
+                        delay(6);
+                        if (!write_2d_next)
+                        {
+                            const uint8_t len = get_1cFrame(buffer);
+                            WriteFrame(len, false);
+                        }
+                        else
+                        {
+                            const uint8_t len = get_2dFrame(buffer);
+                            WriteFrame(len, true);
+                            ControlValueChanged = false;
+                        }
                     }
                 }
                 bufferPos = 0;
@@ -68,6 +85,16 @@ void rs485Loop()
             }
         }
     }
+}
+
+void WriteFrame(const uint8_t len, const bool isLast)
+{
+    const uint16_t crc = crc16_modbus(buffer, len - 3);
+    buffer[len - 3] = crc & 0xFF;           // lage byte
+    buffer[len - 2] = (crc >> 8) & 0xFF;    // hoge byte
+    buffer[len - 1] = isLast ? 0x55 : 0x00; // stopbyte
+    RS485.write(buffer, len);
+    write_2d_next = !isLast;
 }
 
 static uint16_t crc16_modbus(const uint8_t *data, size_t len)
@@ -93,17 +120,23 @@ static bool verifyCrc(const uint8_t *data, size_t len)
         return false; // Minimaal 1 byte data + 2 bytes CRC
     uint16_t receivedCrc = data[len - 3] | (data[len - 2] << 8);
     uint16_t calculatedCrc = crc16_modbus(data, len - 3);
+    if (receivedCrc != calculatedCrc)
+    {
+        Serial.printf("CRC mismatch: received 0x%04X, calculated 0x%04X\n", receivedCrc, calculatedCrc);
+    }
     return receivedCrc == calculatedCrc;
 }
 
 static void frameReader()
 {
-    switch (buffer[5])
+    const uint8_t length = buffer[5];
+    const uint8_t func = buffer[8];
+    switch (length)
     {
     case 0x1c:
         return read_1c(buffer);
     case 0x25:
-        return read_25(buffer);
+        return func == 5 ? read_25_5(buffer) : read_25_6(buffer);
     case 0x2d:
         return read_2d(buffer);
     case 0x3c:

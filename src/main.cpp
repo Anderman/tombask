@@ -4,9 +4,8 @@
 #include <ArduinoOTA.h>
 #include <cstdio>
 #include "secrets.h"
-#include "mtqq/discovery.h"
-#include "mtqq/setup.h"
-#include "mtqq/mqttLoop.h"
+#include "mqtt/setup.h"
+#include "mqtt/mqttLoop.h"
 #include "Ota.h"
 #include "wifiSetup.h"
 #include "rs485/rs485.h"
@@ -29,19 +28,17 @@ void setup()
   Serial.print("[tombask] deviceId=");
   Serial.println(deviceId);
   setupWifi();
-  Serial.print("[tombask] wifi status=");
-  Serial.println(WiFi.status());
-  if (WiFi.status() == WL_CONNECTED)
-  {
-    Serial.print("[tombask] ip=");
-    Serial.println(WiFi.localIP());
-  }
+  Serial.print("setupWifi done, IP=");
+  Serial.print(WiFi.localIP());
+  Serial.println();
   setupWebUi();
-  Serial.println("[tombask] webui started (http://<ip>/)");
+  setupWifiConfigPage();
+  Serial.print("[tombask] webui started: http://");
+  Serial.print(WiFi.localIP());
+  Serial.println("/");
   setupOTA();
-  setupMtqq();
+  setupMqtt();
   setupRs485();
-  setupWifiConfig();
   Serial.println("[tombask] setup done");
 }
 
