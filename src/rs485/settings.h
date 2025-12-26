@@ -1,26 +1,13 @@
 #pragma once
 #include <stdint.h>
 
-struct SettingField
-{
-    const char *name;
-    const char *friendlyName;
-    const char *unit;
-    const char *type;
-    uint16_t min;
-    uint16_t max;
-    uint16_t step;
-};
 
-struct Settings
+struct ControlValues
 {
-    SettingField SetpointTemp;
-    SettingField LegionellaTemp;
-    SettingField Fan;
+    uint8_t SetpointTemp;
+    uint8_t LegionellaTemp;
+    bool Fan;
+    bool Boost;
 };
-
-extern char deviceIdStr[64];
-extern char deviceJson[128];
-extern Settings settings;
-extern void publishSettings();
-extern void ensureDeviceInfo();
+extern bool ControlValueChanged;
+extern ControlValues controlValues;

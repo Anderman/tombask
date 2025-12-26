@@ -16,8 +16,12 @@ void saveDeviceId();
 // Accessors for config values
 const char* getMqttHost();
 uint16_t getMqttPort();
+const char* getMqttUser();
+const char* getMqttPassword();
 const char* getWifiSsid();
 const char* getWifiPassword();
 
 void setMqttHost(const char* host);
 void setMqttPort(uint16_t port);
+void setMqttUser(const char* user);
+void setMqttPassword(const char* password);

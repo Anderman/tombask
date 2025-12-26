@@ -107,6 +107,8 @@ def send_1c_message_once(ser: serial.Serial) -> None:
     ventilatorOff = bytearray.fromhex(
         "7e 7e f0 02 04 1c "
         "90 31 02 15 2c c0 01 00 00 10 ff ff 00 00 af b4 04 4b 73 5f 5a 3a 4b 00 00 00 00"
+        "90 31 02 15 2C C0 01 00 80 10 FF FF 00 00 AF B4 04 4B 73 5F 5A 3A 4B 00 00 00 00 51 1F 00 "
+        "90 31 02 15 2C C0 01 00 80 10 FF FF 00 00 AF B4 04 4B 73 5F 5A 3A 4B 00 00 00 00 51 1F 00 "
     )
     ventilatorOn = bytearray.fromhex(
         "7e 7e f0 02 04 1c "
