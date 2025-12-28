@@ -1,157 +1,66 @@
+#include "storage/sensor_log.h"
+#include <functional>
+#include <ArduinoJson.h>
 #include "webui.h"
-
+#include "webui/controlApi.h"
+#include "webui/mqtt_config.h"
+#include "webui/static_files.h"
 #include <Arduino.h>
 #include <WebServer.h>
-
-#include <ArduinoJson.h>
-
-#include <SPIFFS.h>
-
 #include "storage/storage.h"
 #include <WiFiManager.h>
 #include "webui/webLogger.h"
+#include "../timesync/timesync_api.h"
+#include "webui/temp_logs_api.h"
+#include "webui/dayahead_api.h"
+#include <SPIFFS.h>
 
 WebServer server(80);
-static bool spiffsOk = false;
+static void addPostEndpoint(const char *path, std::function<void()> handler);
+static void addGetEndpoint(const char *path, std::function<void()> handler);
 
-static const char *contentTypeForPath(const String &path)
-{
-    if (path.endsWith(".html"))
-        return "text/html";
-    if (path.endsWith(".css"))
-        return "text/css";
-    if (path.endsWith(".js"))
-        return "application/javascript";
-    if (path.endsWith(".json"))
-        return "application/json";
-    if (path.endsWith(".svg"))
-        return "image/svg+xml";
-    if (path.endsWith(".png"))
-        return "image/png";
-    if (path.endsWith(".ico"))
-        return "image/x-icon";
-    if (path.endsWith(".txt"))
-        return "text/plain";
-    if (path.endsWith(".map"))
-        return "application/json";
-    return "application/octet-stream";
-}
-
-static void sendConfigJson()
-{
-    // NOTE: we intentionally do not return mqttPass.
-    JsonDocument doc;
-    doc["deviceId"] = deviceId;
-    doc["mqttHost"] = getMqttHost();
-    doc["mqttPort"] = getMqttPort();
-    doc["mqttUser"] = getMqttUser();
-    doc["mqttPass"] = "";
-
-    String out;
-    serializeJson(doc, out);
-    server.send(200, "application/json", out);
-}
-
-static void handleGetConfig()
-{
-    sendConfigJson();
-}
-
-static void handlePostConfig()
+bool parseJsonBody(JsonDocument &doc)
 {
     const String body = server.arg("plain");
-    JsonDocument doc;
     const DeserializationError err = deserializeJson(doc, body);
     if (err)
     {
         server.send(400, "text/plain", "Invalid JSON");
-        return;
-    }
-
-    const int newDeviceId = doc["deviceId"] | 1;
-    const char *newMqttHost = doc["mqttHost"] | "";
-    const uint16_t newMqttPort = static_cast<uint16_t>(doc["mqttPort"] | 0);
-    const char *newMqttUser = doc["mqttUser"] | "";
-
-    const bool hasMqttPass = doc.containsKey("mqttPass");
-    const char *newMqttPass = doc["mqttPass"] | "";
-
-    if (newDeviceId < 1 || newDeviceId > 255)
-    {
-        server.send(400, "text/plain", "deviceId must be 1..255");
-        return;
-    }
-
-    deviceId = static_cast<uint8_t>(newDeviceId);
-
-    if (newMqttHost && newMqttHost[0] != '\0')
-    {
-        setMqttHost(newMqttHost);
-    }
-
-    if (newMqttPort != 0)
-    {
-        setMqttPort(newMqttPort);
-    }
-
-    // username: allow empty to clear
-    setMqttUser(newMqttUser);
-
-    // password: only update if provided (UI omits when left blank)
-    if (hasMqttPass && newMqttPass)
-    {
-        setMqttPassword(newMqttPass);
-    }
-
-    saveConfig();
-    sendConfigJson();
-}
-
-static bool tryServeFromSpiffs(const String &uri)
-{
-    if (!spiffsOk)
         return false;
-
-    String path = uri;
-    if (path == "/")
-        path = "/index.html";
-
-    if (SPIFFS.exists(path))
-    {
-        File f = SPIFFS.open(path, "r");
-        if (!f)
-            return false;
-        server.streamFile(f, contentTypeForPath(path));
-        f.close();
-        return true;
     }
-
-    // SPA fallback: if no extension, serve index.html
-    if (path.indexOf('.') < 0 && SPIFFS.exists("/index.html"))
-    {
-        File f = SPIFFS.open("/index.html", "r");
-        if (!f)
-            return false;
-        server.streamFile(f, "text/html");
-        f.close();
-        return true;
-    }
-
-    return false;
+    return true;
 }
 
 void setupWebUi()
 {
+    extern bool spiffsOk;
     spiffsOk = SPIFFS.begin(false);
 
-    server.on("/api/config", HTTP_GET, handleGetConfig);
-    server.on("/api/config", HTTP_POST, handlePostConfig);
-    server.on("/api/logs", HTTP_GET, handleSseLogs);
+    addPostEndpoint("/api/settimezone", handleTimeZonePost);
 
-    server.onNotFound([]()
-                      {
-        if (tryServeFromSpiffs(server.uri())) return;
-        server.send(404, "text/plain", "Not found"); });
+
+    // mqtt config API
+    addGetEndpoint("/api/config", handleGetConfig);
+    addPostEndpoint("/api/config", handlePostConfig);
+
+    // temperatuur log API
+    addGetEndpoint("/api/templogs", handleGetTempLogs);
+
+    // day-ahead prices API
+    addGetEndpoint("/api/dayahead", handleGetDayAheadPrices);
+
+    // weblogger SSE endpoint
+    addGetEndpoint("/api/logs", handleSseLogs);
+
+    // status endpoint
+    addGetEndpoint("/api/status", handleGetStatus);
+
+    addPostEndpoint("/api/setpoint", handlePostSetpoint);
+    addPostEndpoint("/api/fan", handlePostFan);
+    addPostEndpoint("/api/boost", handlePostBoost);
+
+    // static file serving
+    server.onNotFound(handleNotFound);
 
     server.begin();
 }
@@ -159,4 +68,28 @@ void setupWebUi()
 void webUiLoop()
 {
     server.handleClient();
+}
+
+std::function<void()> withCors(std::function<void()> handler)
+{
+    return [handler]()
+    {
+        SEND_CORS();
+        handler();
+    };
+}
+static void addPostEndpoint(const char *path, std::function<void()> handler)
+{
+    server.on(path, HTTP_POST, withCors(handler));
+    server.on(path, HTTP_OPTIONS, []()
+              {
+        server.sendHeader("Access-Control-Allow-Origin", "*");
+        server.sendHeader("Access-Control-Allow-Methods", "POST,OPTIONS");
+        server.sendHeader("Access-Control-Allow-Headers", "Content-Type,Accept");
+        server.send(204); });
+}
+
+static void addGetEndpoint(const char *path, std::function<void()> handler)
+{
+    server.on(path, HTTP_GET, withCors(handler));
 }

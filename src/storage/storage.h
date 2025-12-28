@@ -1,9 +1,14 @@
+// NVS key management
+void listNvsKeys();
+void deleteNvsKey(const char* key);
+void deleteNvsKeysByPrefix(const char* prefix);
 #pragma once
 #include <cstdint>
 
 // Device identifier used for MQTT topics + Home Assistant unique_id/device identifiers.
 // Stored in NVS and editable via Web UI.
 extern uint8_t deviceId;
+extern char timezone[64];
 
 // Load/save all configuration from NVS (Preferences)
 void loadConfig();
