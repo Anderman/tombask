@@ -21,7 +21,7 @@ static bool verifyCrc(const uint8_t *data, size_t len);
 static void frameReader();
 static bool formatFrameLine(const uint8_t *data, size_t len, char *out, size_t outSize);
 static uint16_t crc16_modbus(const uint8_t *data, size_t len);
-static bool write_2d_next = false;
+static bool write_1c_next = false;
 void setupRs485()
 {
     buffer[0] = 0x7e;
@@ -56,8 +56,9 @@ void rs485Loop()
                 char line[3 * 0x48 + 32];
                 const bool crcOk = formatFrameLine(buffer, length, line, sizeof(line));
                 Serial.println(line);
+                webLoggerWriteLine(line);
                 if (buffer[3] == 0x01 && buffer[8] != 0x01)
-                    webLoggerWriteLine(line);
+                {}
                 if (crcOk)
                 {
                     if (buffer[2] == 0xf0 && buffer[3] == 0xf0)
@@ -67,14 +68,14 @@ void rs485Loop()
                     if (ControlValueChanged && buffer[2] == 0x02 && buffer[3] == 0xf0 && buffer[5] == 0x04)
                     {
                         delay(6);
-                        if (!write_2d_next)
+                        if (!write_1c_next)
                         {
-                            const uint8_t len = get_1cFrame(buffer);
+                            const uint8_t len = get_2dFrame(buffer);
                             WriteFrame(len, false);
                         }
                         else
                         {
-                            const uint8_t len = get_2dFrame(buffer);
+                            const uint8_t len = get_1cFrame(buffer);
                             WriteFrame(len, true);
                             ControlValueChanged = false;
                         }
@@ -94,7 +95,7 @@ void WriteFrame(const uint8_t len, const bool isLast)
     buffer[len - 2] = (crc >> 8) & 0xFF;    // hoge byte
     buffer[len - 1] = isLast ? 0x55 : 0x00; // stopbyte
     RS485.write(buffer, len);
-    write_2d_next = !isLast;
+    write_1c_next = !isLast;
 }
 
 static uint16_t crc16_modbus(const uint8_t *data, size_t len)

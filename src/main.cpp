@@ -10,6 +10,7 @@
 #include "wifiSetup.h"
 #include "rs485/rs485.h"
 #include "storage/storage.h"
+#include "storage/sensor_log.h"
 #include "webui/webui.h"
 #include "rs485/settings.h"
 
@@ -25,6 +26,9 @@ void setup()
   Serial.println();
   Serial.println("[tombask] boot");
   loadConfig();
+  listNvsKeys();
+  registerAllSensorLogs(); // Central registration for all logs
+  loadAllSensorLogs();
   Serial.print("[tombask] deviceId=");
   Serial.println(deviceId);
   setupWifi();
@@ -44,9 +48,14 @@ void setup()
 
 void loop()
 {
+  static unsigned long lastLogSave = 0;
   ArduinoOTA.handle();
   webUiLoop();
   wifiManagerLoop();
   mqttLoop();
   rs485Loop();
+  if (millis() - lastLogSave > 1UL * 60 * 1000) { // elke 1 min
+    saveAllSensorLogs();
+    lastLogSave = millis();
+  }
 }

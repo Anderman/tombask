@@ -1,7 +1,9 @@
+#include "storage/sensor_log.h"
 #include <Arduino.h>
 #include "rs485_3c.h"
 #include <cstdint>
 #include "sensors.h"
+#include "settings.h"
 
 struct __attribute__((packed)) Frame3c
 {
@@ -115,7 +117,7 @@ static const SensorField2 sensorMap[] = {
     {"3c_29", "3c[29]", "", "", EXTRACT_BYTE(29)},
     {"3c_30", "3c[30]", "", "", EXTRACT_BYTE(30)},
     {"3c_31", "3c[31] counter?", "", "", EXTRACT_BYTE(31)},
-    {"3c_32", "3c[32] state b4=FanOn b8=CompOn, F", "", "", EXTRACT_BYTE(32)},
+    {"3c_32", "3c[32] state b4=FanOn b8=CompOn", "", "", EXTRACT_BYTE(32)},
     {"3c_33", "3c[33] 02==boost?", "", "", EXTRACT_BYTE(33)},
     {"3c_34", "3c[34]", "", "", EXTRACT_BYTE(34)},
     {"3c_35", "3c[35]", "", "", EXTRACT_BYTE(35)},
@@ -151,11 +153,22 @@ static const SensorField2 sensorMap[] = {
     {"3c_63", "3c[63]", "", "", EXTRACT_BYTE(63)},
     {"3c_64", "3c[64]", "", "", EXTRACT_BYTE(64)},
 };
-
+static Frame3c previousFrame;
+extern SensorLog topTempLog;
+extern SensorLog bottomTempLog;
 void read_3c(const uint8_t *buffer)
 {
+    memcpy(&previousFrame, buffer, sizeof(Frame3c));
+    topTempLog.logIfChanged(previousFrame.T2 - 100);
+    bottomTempLog.logIfChanged(previousFrame.T3 - 100);
     static const int length = sizeof(sensorMap) / sizeof(sensorMap[0]);
     static float lastValues[length] = {0};
     static bool discoveryPublished[length] = {0};
     publishSensors(sensorMap, buffer, lastValues, discoveryPublished, length);
+    if (!ControlValueChanged)
+    {
+        controlValues.Heating = controlValues.Fan ? (previousFrame.a32 & 0x80) != 0 : (previousFrame.a32 & 0x08) != 0;
+        controlValues.TopTemp = previousFrame.T2 - 100;
+        controlValues.BottomTemp = previousFrame.T3 - 100;
+    }
 }

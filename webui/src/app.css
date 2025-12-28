@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+:root {
+	--color-blue-700: oklch(48.8% 0.243 264.376);
+	--text2: var(--color-blue-700);
+	--text-color: var(--color-blue-700);
+	--header-color: #111;
+	--menu-bg: #fff;
+	--menu-text: var(--color-blue-700);
+	--menu-border: #e2e8f0;
+	--accent-color: #2563eb;
+	--boost-color: #f59e42;
+	--card-bg: #f1f5f9;
+	--overlay-bg: rgba(0,0,0,0.2);
+	--icon-color: #222;
+}
+
+[data-theme="dark"] {
+	--text2: var(--color-blue-700);
+	--text-color: #f1f5f9;
+	--header-color: #fff;
+	--menu-bg: #222;
+	--menu-text: #f1f5f9;
+	--menu-border: #334155;
+	--accent-color: #2563eb;
+	--boost-color: #f59e42;
+	--card-bg: #1c1c1c;
+	--overlay-bg: rgba(0,0,0,0.6);
+	--icon-color: #f1f5f9;
+}
