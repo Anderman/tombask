@@ -121,6 +121,8 @@
     if (!allEntries.length) return { dataBottom: [], dataTop: [] };
     let minEpoch = Math.min(...allEntries.map((e) => e.t));
     let maxEpoch = Math.max(...allEntries.map((e) => e.t));
+    minEpoch = Math.max(minEpoch, maxEpoch - 48 * 3600);
+    console.log('minEpoch', minEpoch, 'maxEpoch', maxEpoch);
     return { minEpoch, maxEpoch };
   }
 </script>
