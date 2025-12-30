@@ -31,6 +31,7 @@ protected:
     std::vector<SensorLogEntry> _entries;
     size_t _maxEntries;
     const char *_name;
+     std::vector<int16_t> _lastValues;
 };
 
 // Globale registry voor logs

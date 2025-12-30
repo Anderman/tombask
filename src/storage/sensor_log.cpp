@@ -5,6 +5,7 @@
 #include "sensor_log.h"
 #include <algorithm>
 #include <time.h>
+#include <set>
 
 // Forward declarations for logs in each frame file
 SensorLog topTempLog("TTop");
@@ -27,19 +28,65 @@ SensorLog::SensorLog(const char *name, size_t maxEntries)
 void SensorLog::log(int16_t value)
 {
     u_int32_t timestamp = time(nullptr); // epoch seconds
-    if (_entries.size() >= _maxEntries)
+    while (_entries.size() >= _maxEntries)
     {
         _entries.erase(_entries.begin()); // ringbuffer: verwijder oudste
     }
     _entries.push_back({timestamp, value});
 }
 
-void SensorLog::logIfChanged(int16_t value)
+void SensorLog::logIfChanged(int16_t logValue)
 {
-    if (_entries.empty() || _entries.back().value != value)
+    const size_t bufferSize = 5;
+    _lastValues.push_back(logValue);
+    if (_lastValues.size() > bufferSize)
     {
-        log(value);
+        _lastValues.erase(_lastValues.begin());
     }
+
+    if (_lastValues.size() == 1)
+    {
+        return;
+    }
+    const int16_t prevLogValue = _lastValues[_lastValues.size() - 2];
+    size_t n = _entries.size();
+    if (n == 0)
+    {
+        log(prevLogValue);
+        Serial.println("[sensor_log] First log entry added");
+        return;
+    }
+
+    int16_t last = _entries.back().value;
+    if (prevLogValue == last)
+    {
+        Serial.println("[sensor_log] No change detected, skipping log");
+        return;
+    }
+
+    // Flip-detectie: check of buffer alleen uit 2 waarden bestaat en die afwisselt
+    std::set<int16_t> uniqueVals(_lastValues.begin(), _lastValues.end());
+
+    bool mustLog = false;
+    if (n >= 2 && uniqueVals.size() != 1)
+    {
+        // Flip-detectie: als we flippen tussen 2 waarden, log niet
+        int16_t prev = _entries[n - 2].value;
+        mustLog = (logValue != last && logValue != prev);
+        Serial.printf("[sensor_log] Flip detection check prev:%d last:%d prevLogValue:%d logValue:%d mustLog:%d\n", (int)prev, (int)last, (int)prevLogValue, (int)logValue, (int)mustLog);
+        if (prevLogValue == prev && !mustLog)
+        {
+            Serial.println("[sensor_log] Flip detected, skipping log");
+            return;
+        }
+    }
+    if (_entries.empty() || last != prevLogValue || mustLog)
+    {
+        Serial.println("[sensor_log] Value changed, logging new entry");
+        log(prevLogValue);
+        return;
+    }
+    Serial.println("[sensor_log] No significant change, skipping log");
 }
 
 const std::vector<SensorLogEntry> &SensorLog::entries() const
