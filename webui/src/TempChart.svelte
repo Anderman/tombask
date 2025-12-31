@@ -24,14 +24,14 @@
       data: {
         datasets: [
           {
-            label: 'Bottom temperatuur (°C)',
+            label: 'Bottom temperature (°C)',
             data: dataBottom,
             borderColor: 'rgb(75, 192, 192)',
             pointRadius: 0,
             stepped: 'before',
           },
           {
-            label: 'Top temperatuur (°C)',
+            label: 'Top temperature (°C)',
             data: dataTop,
             borderColor: 'rgb(255, 99, 132)',
             pointRadius: 0,
@@ -41,13 +41,12 @@
       },
       options: {
         maintainAspectRatio: false,
-        animation: true,
+        animation: false,
         plugins: {
           legend: { display: true },
           tooltip: {
             intersect: false,
             mode: 'index',
-            // geen custom callbacks, Chart.js regelt de tijdstip-formattering
           },
           zoom: {
             pan: {
@@ -68,7 +67,7 @@
           y: {
             min: 10,
             max: 70,
-            title: { display: true, text: 'Graden Celsius' },
+             title: { display: true, text: 'Celsius' },
           },
           x: {
             type: 'time',
@@ -80,7 +79,7 @@
               },
               tooltipFormat: 'HH:mm:ss',
             },
-            title: { display: true, text: 'Tijd' },
+             title: { display: true, text: 'Time' },
             ticks: {
               autoSkip: true,
               maxTicksLimit: 10,
@@ -95,38 +94,37 @@
     let topEntries = (json.top || []).sort((a, b) => a.t - b.t);
     let bottomEntries = (json.bottom || []).sort((a, b) => a.t - b.t);
 
-    const { minEpoch, maxEpoch } = getBoundary(topEntries, bottomEntries);
-    return enrichTimeSeriesData(bottomEntries, topEntries, maxEpoch, minEpoch);
-  }
-  function enrichTimeSeriesData(bottomEntries, topEntries, maxEpoch, minEpoch) {
-    const bottomMap = new Map(bottomEntries.map((e) => [e.t, e.v]));
-    const topMap = new Map(topEntries.map((e) => [e.t, e.v]));
-    const allTimestamps = Array.from({ length: Math.floor((maxEpoch - minEpoch) / 1) + 1 }, (_, i) => minEpoch + i * 1);
+    const maxPoints = 1500;
+    const allTimestamps = [...new Set([...topEntries.map(e => e.t), ...bottomEntries.map(e => e.t)].sort((a, b) => a - b))];
+    const sampledTimestamps = downsampleTimestamps(allTimestamps, maxPoints);
 
-    const dataBottom = fillSerie(bottomMap, allTimestamps);
-    const dataTop = fillSerie(topMap, allTimestamps);
+    const dataBottom = alignToTimestamps(bottomEntries, sampledTimestamps);
+    const dataTop = alignToTimestamps(topEntries, sampledTimestamps);
 
     return { dataBottom, dataTop };
   }
 
-  function fillSerie(map, timestamps) {
-    let last = null;
-    return timestamps.map((t) => {
-      if (map.has(t)) last = map.get(t);
-      return { x: new Date(t * 1000), y: last };
-    });
+  function downsampleTimestamps(timestamps, maxPoints) {
+    if (timestamps.length <= maxPoints) return timestamps;
+
+    const step = Math.ceil(timestamps.length / maxPoints);
+    const sampled = [];
+    for (let i = 0; i < timestamps.length; i += step) {
+      sampled.push(timestamps[i]);
+    }
+    return sampled;
   }
-  function getBoundary(topEntries, bottomEntries) {
-    let allEntries = [...topEntries, ...bottomEntries];
-    if (!allEntries.length) return { dataBottom: [], dataTop: [] };
-    let minEpoch = Math.min(...allEntries.map((e) => e.t));
-    let maxEpoch = Math.max(...allEntries.map((e) => e.t));
-    minEpoch = Math.max(minEpoch, maxEpoch - 48 * 3600);
-    console.log('minEpoch', minEpoch, 'maxEpoch', maxEpoch);
-    return { minEpoch, maxEpoch };
+
+  function alignToTimestamps(entries, timestamps) {
+    const entryMap = new Map(entries.map(e => [e.t, e.v]));
+    let lastValue = null;
+    return timestamps.map(t => {
+      if (entryMap.has(t)) lastValue = entryMap.get(t);
+      return { x: new Date(t * 1000), y: lastValue };
+    });
   }
 </script>
 
-<div style="width:calc(100vw - 16px);height:calc(100vh - 96px);">
+<div class="w-full h-[calc(100vh-6rem)]">
   <canvas bind:this={chartEl}></canvas>
 </div>

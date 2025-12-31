@@ -58,6 +58,8 @@ void setupWebUi()
     addPostEndpoint("/api/setpoint", handlePostSetpoint);
     addPostEndpoint("/api/fan", handlePostFan);
     addPostEndpoint("/api/boost", handlePostBoost);
+    addPostEndpoint("/api/legionellaOn", handlePostLegionellaOn);
+    addPostEndpoint("/api/legionellaHour", handlePostLegionellaHour);
 
     // static file serving
     server.onNotFound(handleNotFound);

@@ -1,18 +1,28 @@
-<!-- svelte-ignore a11y_label_has_associated_control -->
 <script>
-  export let label = '';
-  export let type = 'text';
-  export let bindValue;
-  export let autocomplete = '';
-  export let min;
-  export let max;
-  export let required = false;
-
-  // Forward all other attributes
-  export let inputProps = {};
+  let {
+    label = '',
+    type = 'text',
+    value = $bindable(),
+    autocomplete = '',
+    min,
+    max,
+    required = false,
+    placeholder = '',
+    id = ''
+  } = $props();
 </script>
 
-  <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-1 sm:gap-2">
-    <label class="font-medium mb-1 sm:mb-0 sm:w-40 text-left">{label}</label>
-    <input class="border rounded px-3 py-3 text-base flex-1" type={type} bind:value={bindValue} autocomplete={autocomplete} min={min} max={max} required={required} {...inputProps} />
-  </div>
+<div class="flex flex-col sm:flex-row items-stretch gap-2">
+  <label class="font-medium text-[var(--text-secondary)] sm:w-40 flex items-center text-sm" for={id}>{label}</label>
+  <input
+    {id}
+    class="flex-1 rounded-[var(--radius-md)] border border-[var(--border-color)] bg-[var(--bg-tertiary)] px-4 py-3 text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)] focus:border-transparent transition-all duration-150"
+    {type}
+    bind:value={value}
+    {autocomplete}
+    {min}
+    {max}
+    {required}
+    {placeholder}
+  />
+</div>

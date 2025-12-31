@@ -23,11 +23,11 @@ struct __attribute__((packed)) Frame2D
     uint8_t a14;        // 02 C0 02 05 01 C7 01 0C 02 0E 02 C4 00 24 01 17 B4 00 00 00 00 55 8E 5D A7 15 B0 8E 00 AA FF FF FF FF FF 73
     uint8_t a15;        // C0 02 05 01 C7 01 0C 02 0E 02 C4 00 24 01 17 B4 00 00 00 00 55 8E 5D A7 15 B0 8E 00 AA FF FF FF FF FF 73
     uint8_t a16;        // 02 05 01 C7 01 0C 02 0E 02 C4 00 24 01 17 B4 00 00 00 00 55 8E 5D A7 15 B0 8E 00 AA FF FF FF FF FF 73
-    uint8_t a17;        // 05 01 C7 01 0C 02 0E 02 C4 00 24 01 17 B4 00 00 00 00 55 8E 5D A7 15 B0 8E 00 AA FF FF FF FF FF 73
+    uint8_t Functions;        // 05 01 C7 01 0C 02 0E 02 C4 00 24 01 17 B4 00 00 00 00 55 8E 5D A7 15 B0 8E 00 AA FF FF FF FF FF 73
     uint8_t a18;        // 01 C7 01 0C 02 0E 02 C4 00 24 01 17 B4 00 00 00 00 55 8E 5D A7 15 B0 8E 00 AA FF FF FF FF FF 73
     uint8_t a19;        // C7 01 0C 02 0E 02 C4 00 24 01 17 B4 00 00 00 00 55 8E 5D A7 15 B0 8E 00 AA FF FF FF FF FF 73
     uint8_t a20;        // 01 0C 02 0E 02 C4 00 24 01 17 B4 00 00 00 00 55 8E 5D A7 15 B0 8E 00 AA FF FF FF FF FF 73
-    uint8_t a21;        // 0C 02 0E 02 C4 00 24 01 17 B4 00 00 00 00 55 8E 5D A7 15 B0 8E 00 AA FF FF FF FF FF 73
+    uint8_t LegionellaHour;        // 0C 02 0E 02 C4 00 24 01 17 B4 00 00 00 00 55 8E 5D A7 15 B0 8E 00 AA FF FF FF FF FF 73
     uint8_t a22;        // 02 0E 02 C4 00 24 01 17 B4 00 00 00 00 55 8E 5D A7 15 B0 8E 00 AA FF FF FF FF FF 73
     uint8_t a23;        // 0E 02 C4 00 24 01 17 B4 00 00 00 00 55 8E 5D A7 15 B0 8E 00 AA FF FF FF FF FF 73
     uint8_t a24;        // 02 C4 00 24 01 17 B4 00 00 00 00 55 8E 5D A7 15 B0 8E 00 AA FF FF FF FF FF 73
@@ -65,6 +65,7 @@ static Frame2D previousFrame;
 static float extract_T(const uint8_t *b) { return b[11] - 100; }
 static float extract_T2(const uint8_t *b) { return b[43] - 100; }
 static float extract_boost(const uint8_t *b) { return b[10] & 0x04 ? 1 : 0; }
+static float extract_legionellaOn(const uint8_t *b) { return b[17] & 0x01 ? 1 : 0; }
 
 #define EXTRACT_BYTE(idx) [](const uint8_t *b) -> float { return b[idx]; }
 
@@ -78,11 +79,12 @@ static const SensorField2 sensorMap[] = {
     {"2d_14", "2d[14]", "", "", EXTRACT_BYTE(14)},
     {"2d_15", "2d[15] Timer system(c0) sunflower vacation", "", "", EXTRACT_BYTE(15)},
     {"2d_16", "2d[16]", "", "", EXTRACT_BYTE(16)},
-    {"2d_17", "2d[17]", "", "", EXTRACT_BYTE(17)},
+    {"2d_17", "2d[17] bit 1 legionella on/off", "", "", EXTRACT_BYTE(17)},
+    {"legionellaOn", "legionella on/off", "", "", extract_legionellaOn, 0, 0, 0, 0, true, true},
     {"2d_18", "2d[18]", "", "", EXTRACT_BYTE(18)},
     {"2d_19", "2d[19]", "", "", EXTRACT_BYTE(19)},
     {"2d_20", "2d[20]", "", "", EXTRACT_BYTE(20)},
-    {"2d_21", "2d[21]", "", "", EXTRACT_BYTE(21)},
+    {"2d_21", "2d[21] legionella hour", "", "", EXTRACT_BYTE(21)},
     {"2d_22", "2d[22]", "", "", EXTRACT_BYTE(22)},
     {"2d_23", "2d[23]", "", "", EXTRACT_BYTE(23)},
     {"2d_24", "2d[24]", "", "", EXTRACT_BYTE(24)},
@@ -104,7 +106,7 @@ static const SensorField2 sensorMap[] = {
     {"2d_40", "2d[40]", "", "", EXTRACT_BYTE(40)},
     {"2d_41", "2d[41]", "", "", EXTRACT_BYTE(41)},
     {"2d_42", "2d[42]", "", "", EXTRACT_BYTE(42)},
-    {"2d_43", "TSetpoint Legionella", "°C", "temperature", extract_T2, 0, 40, 70, 1, true},
+    {"2d_43", "TSetpoint Legionella", "°C", "temperature",  EXTRACT_BYTE(43), 0, 0, 23, 1, true},
     {"2d_44", "2d[44]", "", "", EXTRACT_BYTE(44)},
     {"2d_45", "2d[45]", "", "", EXTRACT_BYTE(45)},
     {"2d_46", "2d[46]", "", "", EXTRACT_BYTE(46)},
@@ -126,6 +128,8 @@ void read_2d(const uint8_t *buffer)
         controlValues.SetpointTemp = previousFrame.Tsetpoint - 100;
         controlValues.LegionellaTemp = previousFrame.TSetpoint2 - 100;
         controlValues.Boost = (previousFrame.a10 & 0x04) != 0;
+        controlValues.LegionellaOn = (previousFrame.Functions & 0x01) != 0;
+        controlValues.LegionellaHour = previousFrame.LegionellaHour;
     }
 }
 
@@ -137,7 +141,8 @@ uint8_t get_2dFrame(uint8_t *buffer)
     previousFrame.func = 0x02;
     previousFrame.Tsetpoint = controlValues.SetpointTemp + 100;
     previousFrame.TSetpoint2 = controlValues.LegionellaTemp + 100;
-    previousFrame.a10 = controlValues.Boost ? previousFrame.a10 | 0x04 : previousFrame.a10 & ~0x04;
+    previousFrame.Functions = controlValues.LegionellaOn ? previousFrame.Functions | 0x01 : previousFrame.Functions & ~0x01;
+    previousFrame.LegionellaHour = controlValues.LegionellaHour;
 
     memcpy(buffer, &previousFrame, sizeof(Frame2D));
     return sizeof(Frame2D);

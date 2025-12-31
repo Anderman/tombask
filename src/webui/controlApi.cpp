@@ -39,6 +39,26 @@ void handlePostBoost()
     server.send(204);
 }
 
+void handlePostLegionellaOn()
+{
+    bool legionellaOn;
+    if (!getValue("LegionellaOn", legionellaOn))
+        return;
+    controlValues.LegionellaOn = legionellaOn;
+    ControlValueChanged = true;
+    server.send(204);
+}
+
+void handlePostLegionellaHour()
+{
+    uint8_t legionellaHour;
+    if (!getValue("LegionellaHour", legionellaHour))
+        return;
+    controlValues.LegionellaHour = legionellaHour;
+    ControlValueChanged = true;
+    server.send(204);
+}
+
 // Generieke getValue template voor elk type
 template<typename T>
 bool getValue(const char* key, T &value)
@@ -66,6 +86,8 @@ void handleGetStatus()
     doc["Heating"] = controlValues.Heating;
     doc["Fan"] = controlValues.Fan;
     doc["Boost"] = controlValues.Boost;
+    doc["LegionellaHour"] = controlValues.LegionellaHour;
+    doc["LegionellaOn"] = controlValues.LegionellaOn;
     String out;
     serializeJson(doc, out);
     server.send(200, "application/json", out);

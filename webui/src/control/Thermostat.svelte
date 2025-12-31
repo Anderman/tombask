@@ -1,14 +1,13 @@
-<!-- svelte-ignore a11y_click_events_have_key_events -->
-<!-- svelte-ignore a11y_no_static_element_interactions -->
 <script>
-  export let power;
-  export let topTemp;
-  export let setPointTemp;
-  export let min = 40;
-  export let max = 70;
-  export let step = 1;
-  import { createEventDispatcher } from 'svelte';
-  const dispatch = createEventDispatcher();
+  let {
+    power,
+    topTemp,
+    setPointTemp,
+    min = 40,
+    max = 70,
+    step = 1,
+    onsetTarget = () => {}
+  } = $props();
 
   const r = 120;
   const cx = 160;
@@ -24,6 +23,7 @@
     const largeArcFlag = endAngle - startAngle <= 180 ? '0' : '1';
     return ['M', start.x, start.y, 'A', r, r, 0, largeArcFlag, 1, end.x, end.y].join(' ');
   }
+
   function polarToCartesian(cx, cy, r, angle) {
     const rad = ((angle - 90) * Math.PI) / 180.0;
     return {
@@ -31,11 +31,12 @@
       y: cy + r * Math.sin(rad),
     };
   }
-  $: progressSetpoint = (setPointTemp - min) / (max - min);
-  $: progress = (topTemp - min) / (max - min);
-  $: offset = circumference * progress;
-  $: handleAngle = arcStart + arcLen * progressSetpoint;
-  $: handle = polarToCartesian(cx, cy, r, handleAngle);
+
+  let progressSetpoint = $derived((setPointTemp - min) / (max - min));
+  let progress = $derived((topTemp - min) / (max - min));
+  let offset = $derived(circumference * progress);
+  let handleAngle = $derived(arcStart + arcLen * progressSetpoint);
+  let handle = $derived(polarToCartesian(cx, cy, r, handleAngle));
 
   function setTempFromClick(e) {
     const svg = e.currentTarget;
@@ -55,53 +56,59 @@
     if (rel > arcLen) return;
     const pct = rel / arcLen;
     const val = min + pct * (max - min);
-    dispatch('setTarget', Math.round(val));
+    onsetTarget(Math.round(val));
   }
+
   function handlePlus() {
-    if (setPointTemp + step <= max) dispatch('setTarget', Math.round((setPointTemp + step) * 2) / 2);
+    if (setPointTemp + step <= max) onsetTarget(Math.round((setPointTemp + step) * 2) / 2);
   }
+
   function handleMin() {
-    if (setPointTemp - step >= min) dispatch('setTarget', Math.round((setPointTemp - step) * 2) / 2);
+    if (setPointTemp - step >= min) onsetTarget(Math.round((setPointTemp - step) * 2) / 2);
   }
 </script>
 
-<div class="flex flex-col items-center my-6">
+<div class="flex flex-col items-center py-4">
+  <!-- svelte-ignore a11y_click_events_have_key_events -->
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
   <svg
     id="slider"
     viewBox="0 0 320 320"
-    class="w-72 h-72 select-none outline-none focus:outline-none focus:ring-0"
+    class="w-72 h-72 select-none outline-none focus:outline-none focus:ring-0 cursor-pointer touch-none"
     tabindex="-1"
-    on:click={setTempFromClick}
-    style="touch-action: none; user-select: none; cursor: pointer;"
+    onclick={setTempFromClick}
+    role="slider"
+    aria-valuenow={topTemp}
+    aria-valuemin={min}
+    aria-valuemax={max}
   >
-    <g id="container" transform="translate(0 0)">
-      <path d={describeArc(cx, cy, r, arcStart, arcEnd)} stroke="#bdbdbd" stroke-width="18" stroke-opacity="0.3" fill="none"></path>
+    <g id="container">
+      <path d={describeArc(cx, cy, r, arcStart, arcEnd)} stroke="#e2e8f0" stroke-width="20" fill="none" class="dark:stroke-slate-600"></path>
       <path
         d={describeArc(cx, cy, r, arcStart, arcEnd)}
-        stroke="var(--boost-color)"
-        stroke-width="18"
+        stroke="var(--color-accent)"
+        stroke-width="20"
         fill="none"
         stroke-linecap="round"
         stroke-dasharray={circumference}
         stroke-dashoffset={circumference - offset}
+        class="transition-all duration-300"
       ></path>
-      <circle cx={handle.x} cy={handle.y} r="14" fill="#2563eb" stroke="#fff" stroke-width="4" style="filter: drop-shadow(0 2px 6px #2563eb44);"></circle>
-      <text x="160" y="155" text-anchor="middle" font-size="3.5rem" fill="var(--boost-color)" font-weight="bold">{topTemp}<tspan font-size="1.2rem" dy="-1.2rem">°C</tspan></text>
-      <text x="160" y="190" text-anchor="middle" font-size="1.2rem" fill="var(--text2)">{setPointTemp}<tspan font-size="0.5rem" dy="-0.5rem">°C</tspan></text>
-      <text x="160" y="230" text-anchor="middle" font-size="1.2rem" fill="#888">{power}W</text>
+      <circle cx={handle.x} cy={handle.y} r="16" fill="#3b82f6" stroke="#ffffff" stroke-width="4" class="drop-shadow-lg"></circle>
+      <text x="160" y="150" text-anchor="middle" font-size="3.5rem" fill="var(--color-accent)" font-weight-bold>{topTemp.toFixed(1)}<tspan font-size="1.2rem" dy="-1.2rem" fill="var(--text-secondary)">°C</tspan></text>
+      <text x="160" y="190" text-anchor="middle" font-size="1.2rem" fill="var(--text-secondary)">Set: {setPointTemp}<tspan font-size="0.5rem" dy="-0.5rem">°C</tspan></text>
+      <text x="160" y="230" text-anchor="middle" font-size="1.1rem" fill="var(--text-muted)">{power}W</text>
     </g>
   </svg>
-  <div class="relative z-10 flex flex-col items-center -mt-22"></div>
-  <div class="flex gap-6 mt-4">
+
+  <div class="flex gap-8 mt-6">
     <button
-      class="w-10 h-10 rounded-full border-2 bg-transparent hover:bg-blue-50 transition shadow-none text-2xl font-bold pb-2"
-      style="border-color: var(--text2); color: var(--text2);"
-      on:click={handleMin}>-</button
+      class="w-12 h-12 rounded-full border-2 bg-[var(--bg-tertiary)] hover:bg-[var(--bg-hover)] transition flex items-center justify-center text-2xl font-bold text-[var(--text-secondary)] hover:text-[var(--color-primary)] hover:border-[var(--color-primary)] cursor-pointer"
+      onclick={handleMin}>-</button
     >
     <button
-      class="w-10 h-10 rounded-full border-2 bg-transparent hover:bg-blue-50 transition shadow-none text-2xl font-bold pb-2"
-      style="border-color: var(--text2); color: var(--text2);"
-      on:click={handlePlus}>+</button
+      class="w-12 h-12 rounded-full border-2 bg-[var(--bg-tertiary)] hover:bg-[var(--bg-hover)] transition flex items-center justify-center text-2xl font-bold text-[var(--text-secondary)] hover:text-[var(--color-primary)] hover:border-[var(--color-primary)] cursor-pointer"
+      onclick={handlePlus}>+</button
     >
   </div>
 </div>
