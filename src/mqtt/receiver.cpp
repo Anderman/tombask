@@ -17,6 +17,15 @@ void onMqttMessage(char *topic, byte *payload, unsigned int length)
             ControlValueChanged = true;
         }
     }
+    if (topicStr == "tombask/tombask1/legionellaOn/set")
+    {
+        const bool newValue = (payloadStr == "ON");
+        if (newValue != controlValues.LegionellaOn)
+        {
+            controlValues.LegionellaOn = newValue;
+            ControlValueChanged = true;
+        }
+    }
     if (topicStr == "tombask/tombask1/boost/set")
     {
         const bool newValue = (payloadStr == "ON");
@@ -32,6 +41,15 @@ void onMqttMessage(char *topic, byte *payload, unsigned int length)
         if (newValue != controlValues.SetpointTemp)
         {
             controlValues.SetpointTemp = newValue;
+            ControlValueChanged = true;
+        }
+    }
+    if (topicStr == "tombask/tombask1/2d_21/set")
+    {
+        const uint8_t newValue = payloadStr.toInt();
+        if (newValue != controlValues.LegionellaHour)
+        {
+            controlValues.LegionellaHour = newValue;
             ControlValueChanged = true;
         }
     }

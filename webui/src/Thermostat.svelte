@@ -38,9 +38,9 @@
   // Progress (0..1)
   $: progress = (targetTemp - min) / (max - min);
   $: dash = circumference * progress;
-  // Fill moet starten bij arcStart (onder) en met de klok mee lopen
+  // Fill should start at arcStart (bottom) and run clockwise
   $: offset = circumference * (progress);
-  // Handle positie
+  // Handle position
   $: handleAngle = arcStart + arcLen * progress;
   $: handle = polarToCartesian(cx, cy, r, handleAngle);
 
@@ -48,7 +48,7 @@
     const rect = e.target.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-    // Fix: svg kan geschaald zijn, dus corrigeer voor viewBox
+    // Fix: svg can be scaled, so correct for viewBox
     const svg = e.target.closest('svg');
     const vb = svg.viewBox.baseVal;
     const scaleX = vb.width / rect.width;
@@ -77,10 +77,10 @@
   <svg
     id="slider"
     viewBox="0 0 320 320"
-    class="w-72 h-72 select-none outline-none focus:outline-none focus:ring-0"
+    class="w-72 h-72 select-none outline-none focus:outline-none focus:ring-0 cursor-pointer touch-none"
     tabindex="-1"
-    on:click={setTempFromClick}
-    style="touch-action: none; user-select: none; cursor: pointer;"
+    onclick={setTempFromClick}
+    style="touch-action: none; user-select: none;"
   >
     <g id="container" transform="translate(0 0)">
       <!-- Arc background -->
@@ -88,7 +88,7 @@
       <!-- Arc progress -->
       <path
         d={describeArc(cx, cy, r, arcStart, arcEnd)}
-        stroke="red"
+        stroke="var(--color-accent)"
         stroke-width="18"
         fill="none"
         stroke-linecap="round"
@@ -100,25 +100,25 @@
         cx={handle.x}
         cy={handle.y}
         r="14"
-        fill="#2563eb"
+        fill="var(--color-primary)"
         stroke="#fff"
         stroke-width="4"
         style="filter: drop-shadow(0 2px 6px #2563eb44);"
       />
-      <!-- Huidige temp groot in het midden -->
-      <text x="160" y="155" text-anchor="middle" font-size="3.5rem" fill="#2563eb" font-weight="bold">{currentTemp}°C</text>
-      <!-- Gewenste temp klein eronder -->
-      <text x="160" y="190" text-anchor="middle" font-size="1.2rem" fill="#888">Streef: {targetTemp}°C</text>
+      <!-- Current temp large in the center -->
+      <text x="160" y="155" text-anchor="middle" font-size="3.5rem" fill="var(--color-primary)" font-weight="bold">{currentTemp}°C</text>
+      <!-- Target temp smaller below -->
+      <text x="160" y="190" text-anchor="middle" font-size="1.2rem" fill="var(--text-muted)">Target: {targetTemp}°C</text>
     </g>
   </svg>
   <div class="relative z-10 flex flex-col items-center -mt-24">
-    <!-- Verwijder deze oude display -->
+    <!-- Remove this old display -->
     <!-- <div class="text-5xl font-extrabold text-blue-900">{targetTemp}°C</div>
     <div class="text-base text-blue-700 mt-1">Streefwaarde</div> -->
   </div>
   <div class="flex gap-6 mt-4">
-    <button class="w-10 h-10 rounded-full border-2 border-blue-700 text-2xl font-bold text-blue-700 bg-transparent hover:bg-blue-50 transition shadow-none" on:click={handleMin}>-</button>
-    <button class="w-10 h-10 rounded-full border-2 border-blue-700 text-2xl font-bold text-blue-700 bg-transparent hover:bg-blue-50 transition shadow-none" on:click={handlePlus}>+</button>
+    <button class="w-10 h-10 rounded-full border-2 font-bold text-2xl bg-transparent transition shadow-none cursor-pointer" style="border-color: var(--color-primary); color: var(--color-primary);" onclick={handleMin}>-</button>
+    <button class="w-10 h-10 rounded-full border-2 font-bold text-2xl bg-transparent transition shadow-none cursor-pointer" style="border-color: var(--color-primary); color: var(--color-primary);" onclick={handlePlus}>+</button>
   </div>
 </div>
 

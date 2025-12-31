@@ -13,7 +13,8 @@ void publishSensorDiscovery(SensorField2 field)
     SetProperties(field);
     if (field.isSwitch)
     {
-        const char *icon = field.name=="boost"? "mdi:rocket" : "mdi:fan";
+        const char *icon = field.name == "boost" ? "mdi:rocket" : field.name == "fan" ? "mdi:fan"
+                                                                                      : "mdi:toggle-switch";
         char availabilityTopic[128];
         snprintf(availabilityTopic, sizeof(availabilityTopic), "tombask/%s/status", deviceIdStr);
         snprintf(payload, sizeof(payload),
