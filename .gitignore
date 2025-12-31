@@ -13,3 +13,5 @@ secrets.h
 webui/node_modules/
 webui/dist/
 data/
+# Temporary files created by editors (e.g. backup/temp files)
+~*

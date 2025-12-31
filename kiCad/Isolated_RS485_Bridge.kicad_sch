@@ -1,0 +1,50 @@
+(kicad_sch
+  (version 20231015)
+  (generator "kicad-9")
+  (uuid 11111111-aaaa-bbbb-cccc-000000000001)
+
+  (paper "A4")
+
+  (title_block
+    (title "Isolated RS485 WiFi Bridge")
+    (company "Custom Electronics")
+    (rev "1.0")
+    (date "2025-12-31")
+  )
+
+  # CONNECTORS (links)
+  (sheet
+    (at 30 120)
+    (size 80 60)
+    (uuid 22222222-aaaa-bbbb-cccc-000000000002)
+    (property "Sheet name" "Connectors")
+    (property "Sheet file" "Connectors.kicad_sch")
+  )
+
+  # POWER (na connectors)
+  (sheet
+    (at 150 120)
+    (size 80 60)
+    (uuid 33333333-aaaa-bbbb-cccc-000000000003)
+    (property "Sheet name" "Power")
+    (property "Sheet file" "Power.kicad_sch")
+  )
+
+  # RS485 (na power)
+  (sheet
+    (at 270 120)
+    (size 80 60)
+    (uuid 44444444-aaaa-bbbb-cccc-000000000004)
+    (property "Sheet name" "RS485")
+    (property "Sheet file" "RS485.kicad_sch")
+  )
+
+  # ESP32 (rechts)
+  (sheet
+    (at 390 120)
+    (size 80 60)
+    (uuid 55555555-aaaa-bbbb-cccc-000000000005)
+    (property "Sheet name" "ESP32")
+    (property "Sheet file" "ESP32.kicad_sch")
+  )
+)

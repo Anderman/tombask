@@ -1,0 +1,71 @@
+(kicad_sch
+  (version 20231015)
+  (generator "kicad-9")
+  (uuid 22222222-aaaa-bbbb-cccc-000000000002)
+
+  (paper "A4")
+
+  (title_block
+    (title "Connectors & Input Protection")
+    (company "Custom Electronics")
+    (rev "1.0")
+    (date "2025-12-31")
+  )
+
+  ;; === J1 Terminal Block ===
+  (symbol (lib_id "Connector:Conn_01x02")
+    (at 40 100 0)
+    (unit 1)
+    (uuid 10000000-0000-4000-8000-000000000001)
+    (property "Reference" "J1" (id 0) (at 40 115 0)
+      (effects (font (size 1.27 1.27))))
+    (property "Value" "Conn_01x02" (id 1) (at 40 85 0)
+      (effects (font (size 1.27 1.27))))
+  )
+
+  ;; === D1 SS34 Schottky ===
+  (symbol (lib_id "Device:D_Schottky")
+    (at 90 100 0)
+    (unit 1)
+    (uuid 20000000-0000-4000-8000-000000000002)
+    (property "Reference" "D1" (id 0) (at 90 115 0)
+      (effects (font (size 1.27 1.27))))
+    (property "Value" "SS34" (id 1) (at 90 85 0)
+      (effects (font (size 1.27 1.27))))
+  )
+
+  ;; === D2 SMAJ24CA TVS ===
+  (symbol (lib_id "Device:D_TVS")
+    (at 90 140 0)
+    (unit 1)
+    (uuid 30000000-0000-4000-8000-000000000003)
+    (property "Reference" "D2" (id 0) (at 90 155 0)
+      (effects (font (size 1.27 1.27))))
+    (property "Value" "SMAJ24CA" (id 1) (at 90 125 0)
+      (effects (font (size 1.27 1.27))))
+  )
+
+  ;; === Wires ===
+  (wire (pts (40 100) (70 100)) (uuid 40000000-0000-4000-8000-000000000004))
+  (wire (pts (70 100) (90 100)) (uuid 40000000-0000-4000-8000-000000000005))
+  (wire (pts (90 100) (120 100)) (uuid 40000000-0000-4000-8000-000000000006))
+
+  ;; TVS to line
+  (wire (pts (90 140) (90 120)) (uuid 40000000-0000-4000-8000-000000000007))
+
+  ;; === Net Labels ===
+  (net_label (at 120 100 0)
+    (uuid 50000000-0000-4000-8000-000000000008)
+    (text "VIN_RAW")
+    (effects (font (size 1.27 1.27)))
+  )
+
+  (net_label (at 90 160 0)
+    (uuid 50000000-0000-4000-8000-000000000009)
+    (text "GND")
+    (effects (font (size 1.27 1.27)))
+  )
+
+  ;; === Junctions ===
+  (junction (at 90 100) (uuid 60000000-0000-4000-8000-00000000000A))
+)

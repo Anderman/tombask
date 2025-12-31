@@ -1,0 +1,98 @@
+(kicad_sch
+  (version 20231015)
+  (generator "kicad-9")
+  (uuid 33333333-aaaa-bbbb-cccc-000000000003)
+
+  (paper "A4")
+
+  (title_block
+    (title "Power Stage")
+    (company "Custom Electronics")
+    (rev "1.0")
+    (date "2025-12-31")
+  )
+
+  ;; === C1 470uF input capacitor ===
+  (symbol (lib_id "Device:C")
+    (at 60 100 0)
+    (unit 1)
+    (uuid 10000000-0000-4000-9000-000000000010)
+    (property "Reference" "C1" (id 0) (at 60 115 0)
+      (effects (font (size 1.27 1.27))))
+    (property "Value" "470uF" (id 1) (at 60 85 0)
+      (effects (font (size 1.27 1.27))))
+  )
+
+  ;; === U1 DC/DC converter ===
+  (symbol (lib_id "Converter_DCDC:R3.3S-2403.3")
+    (at 120 100 0)
+    (unit 1)
+    (uuid 20000000-0000-4000-9000-000000000011)
+    (property "Reference" "U1" (id 0) (at 120 120 0)
+      (effects (font (size 1.27 1.27))))
+    (property "Value" "R3.3S-2403.3" (id 1) (at 120 80 0)
+      (effects (font (size 1.27 1.27))))
+  )
+
+  ;; === C2 10uF output capacitor ===
+  (symbol (lib_id "Device:C")
+    (at 180 90 0)
+    (unit 1)
+    (uuid 30000000-0000-4000-9000-000000000012)
+    (property "Reference" "C2" (id 0) (at 180 105 0)
+      (effects (font (size 1.27 1.27))))
+    (property "Value" "10uF" (id 1) (at 180 75 0)
+      (effects (font (size 1.27 1.27))))
+  )
+
+  ;; === C3 100nF output capacitor ===
+  (symbol (lib_id "Device:C")
+    (at 180 130 0)
+    (unit 1)
+    (uuid 40000000-0000-4000-9000-000000000013)
+    (property "Reference" "C3" (id 0) (at 180 145 0)
+      (effects (font (size 1.27 1.27))))
+    (property "Value" "100nF" (id 1) (at 180 115 0)
+      (effects (font (size 1.27 1.27))))
+  )
+
+  ;; === Wires ===
+  (wire (pts (40 100) (60 100)) (uuid 50000000-0000-4000-9000-000000000014))
+  (wire (pts (60 100) (120 100)) (uuid 50000000-0000-4000-9000-000000000015))
+  (wire (pts (120 100) (180 100)) (uuid 50000000-0000-4000-9000-000000000016))
+  (wire (pts (180 100) (220 100)) (uuid 50000000-0000-4000-9000-000000000017))
+
+  ;; C2/C3 ground wires
+  (wire (pts (180 90) (180 70)) (uuid 50000000-0000-4000-9000-000000000018))
+  (wire (pts (180 130) (180 150)) (uuid 50000000-0000-4000-9000-000000000019))
+
+  ;; === Net Labels ===
+  (net_label (at 40 100 0)
+    (uuid 60000000-0000-4000-9000-000000000020)
+    (text "VIN_RAW")
+    (effects (font (size 1.27 1.27)))
+  )
+
+  (net_label (at 220 100 0)
+    (uuid 60000000-0000-4000-9000-000000000021)
+    (text "3V3_ISO")
+    (effects (font (size 1.27 1.27)))
+  )
+
+  (net_label (at 180 70 0)
+    (uuid 60000000-0000-4000-9000-000000000022)
+    (text "GND_ISO")
+    (effects (font (size 1.27 1.27)))
+  )
+
+  (net_label (at 180 150 0)
+    (uuid 60000000-0000-4000-9000-000000000023)
+    (text "GND_ISO")
+    (effects (font (size 1.27 1.27)))
+  )
+
+  ;; === Junctions ===
+  (junction (at 60 100) (uuid 70000000-0000-4000-9000-000000000024))
+  (junction (at 120 100) (uuid 70000000-0000-4000-9000-000000000025))
+  (junction (at 180 100) (uuid 70000000-0000-4000-9000-000000000026))
+)

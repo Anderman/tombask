@@ -1,0 +1,101 @@
+(kicad_sch
+  (version 20231015)
+  (generator "kicad-9")
+  (uuid 55555555-aaaa-bbbb-cccc-000000000005)
+
+  (paper "A4")
+
+  (title_block
+    (title "ESP32-C3 Core")
+    (company "Custom Electronics")
+    (rev "1.0")
+    (date "2025-12-31")
+  )
+
+  ;; === U2 ESP32-C3-MINI-1 ===
+  (symbol (lib_id "Module:ESP32-C3-MINI-1")
+    (at 120 100 0)
+    (unit 1)
+    (uuid 10000000-0000-4000-b000-000000000050)
+    (property "Reference" "U2" (id 0) (at 120 130 0)
+      (effects (font (size 1.27 1.27))))
+    (property "Value" "ESP32-C3-MINI-1" (id 1) (at 120 70 0)
+      (effects (font (size 1.27 1.27))))
+  )
+
+  ;; === Decoupling capacitors ===
+
+  ;; C2 10uF
+  (symbol (lib_id "Device:C")
+    (at 60 80 0)
+    (unit 1)
+    (uuid 20000000-0000-4000-b000-000000000051)
+    (property "Reference" "C2" (id 0) (at 60 95 0)
+      (effects (font (size 1.27 1.27))))
+    (property "Value" "10uF" (id 1) (at 60 65 0)
+      (effects (font (size 1.27 1.27))))
+  )
+
+  ;; C3 100nF
+  (symbol (lib_id "Device:C")
+    (at 60 120 0)
+    (unit 1)
+    (uuid 30000000-0000-4000-b000-000000000052)
+    (property "Reference" "C3" (id 0) (at 60 135 0)
+      (effects (font (size 1.27 1.27))))
+    (property "Value" "100nF" (id 1) (at 60 105 0)
+      (effects (font (size 1.27 1.27))))
+  )
+
+  ;; === Wires: Power ===
+  (wire (pts (60 80) (120 80)) (uuid 40000000-0000-4000-b000-000000000053))
+  (wire (pts (60 120) (120 120)) (uuid 40000000-0000-4000-b000-000000000054))
+
+  ;; === Wires: UART ===
+  (wire (pts (160 110) (200 110)) (uuid 40000000-0000-4000-b000-000000000055))
+  (wire (pts (160 90) (200 90)) (uuid 40000000-0000-4000-b000-000000000056))
+
+  ;; === EN pin ===
+  (wire (pts (120 100) (80 100)) (uuid 40000000-0000-4000-b000-000000000057))
+
+  ;; === Net Labels ===
+
+  ;; Power
+  (net_label (at 60 80 0)
+    (uuid 50000000-0000-4000-b000-000000000058)
+    (text "3V3_ISO")
+    (effects (font (size 1.27 1.27)))
+  )
+
+  (net_label (at 60 120 0)
+    (uuid 50000000-0000-4000-b000-000000000059)
+    (text "GND_ISO")
+    (effects (font (size 1.27 1.27)))
+  )
+
+  ;; UART
+  (net_label (at 200 110 0)
+    (uuid 50000000-0000-4000-b000-00000000005A)
+    (text "UART_RX")
+    (effects (font (size 1.27 1.27)))
+  )
+
+  (net_label (at 200 90 0)
+    (uuid 50000000-0000-4000-b000-00000000005B)
+    (text "UART_TX")
+    (effects (font (size 1.27 1.27)))
+  )
+
+  ;; EN
+  (net_label (at 80 100 0)
+    (uuid 50000000-0000-4000-b000-00000000005C)
+    (text "EN")
+    (effects (font (size 1.27 1.27)))
+  )
+
+  ;; === Junctions ===
+  (junction (at 60 80) (uuid 60000000-0000-4000-b000-00000000005D))
+  (junction (at 60 120) (uuid 60000000-0000-4000-b000-00000000005E))
+  (junction (at 120 80) (uuid 60000000-0000-4000-b000-00000000005F))
+  (junction (at 120 120) (uuid 60000000-0000-4000-b000-000000000060))
+)

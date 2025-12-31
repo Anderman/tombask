@@ -1,0 +1,80 @@
+(kicad_sch
+  (version 20231015)
+  (generator "kicad-9")
+  (uuid 44444444-aaaa-bbbb-cccc-000000000004)
+
+  (paper "A4")
+
+  (title_block
+    (title "RS485 Transceiver Stage")
+    (company "Custom Electronics")
+    (rev "1.0")
+    (date "2025-12-31")
+  )
+
+  ;; === U3 ADM2587E ===
+  (symbol (lib_id "DriverRS485:ADM2587E")
+    (at 120 100 0)
+    (unit 1)
+    (uuid 10000000-0000-4000-a000-000000000030)
+    (property "Reference" "U3" (id 0) (at 120 125 0)
+      (effects (font (size 1.27 1.27))))
+    (property "Value" "ADM2587E" (id 1) (at 120 75 0)
+      (effects (font (size 1.27 1.27))))
+  )
+
+  ;; === Wires: UART side ===
+  (wire (pts (80 105) (120 105)) (uuid 20000000-0000-4000-a000-000000000031))
+  (wire (pts (80 95) (120 95)) (uuid 20000000-0000-4000-a000-000000000032))
+
+  ;; === Wires: RS485 differential ===
+  (wire (pts (120 105) (160 105)) (uuid 20000000-0000-4000-a000-000000000033))
+  (wire (pts (120 95) (160 95)) (uuid 20000000-0000-4000-a000-000000000034))
+
+  ;; === Power ===
+  (wire (pts (120 120) (120 140)) (uuid 20000000-0000-4000-a000-000000000035))
+  (wire (pts (120 80) (120 60)) (uuid 20000000-0000-4000-a000-000000000036))
+
+  ;; === Net Labels ===
+  (net_label (at 80 105 0)
+    (uuid 30000000-0000-4000-a000-000000000037)
+    (text "UART_TX")
+    (effects (font (size 1.27 1.27)))
+  )
+
+  (net_label (at 80 95 0)
+    (uuid 30000000-0000-4000-a000-000000000038)
+    (text "UART_RX")
+    (effects (font (size 1.27 1.27)))
+  )
+
+  (net_label (at 160 105 0)
+    (uuid 30000000-0000-4000-a000-000000000039)
+    (text "RS485_A")
+    (effects (font (size 1.27 1.27)))
+  )
+
+  (net_label (at 160 95 0)
+    (uuid 30000000-0000-4000-a000-00000000003A)
+    (text "RS485_B")
+    (effects (font (size 1.27 1.27)))
+  )
+
+  (net_label (at 120 140 0)
+    (uuid 30000000-0000-4000-a000-00000000003B)
+    (text "3V3_ISO")
+    (effects (font (size 1.27 1.27)))
+  )
+
+  (net_label (at 120 60 0)
+    (uuid 30000000-0000-4000-a000-00000000003C)
+    (text "GND_ISO")
+    (effects (font (size 1.27 1.27)))
+  )
+
+  ;; === Junctions ===
+  (junction (at 120 105) (uuid 40000000-0000-4000-a000-00000000003D))
+  (junction (at 120 95) (uuid 40000000-0000-4000-a000-00000000003E))
+  (junction (at 120 120) (uuid 40000000-0000-4000-a000-00000000003F))
+  (junction (at 120 80) (uuid 40000000-0000-4000-a000-000000000040))
+)
