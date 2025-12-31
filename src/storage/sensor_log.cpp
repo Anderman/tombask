@@ -53,14 +53,12 @@ void SensorLog::logIfChanged(int16_t logValue)
     if (n == 0)
     {
         log(prevLogValue);
-        Serial.println("[sensor_log] First log entry added");
         return;
     }
 
     int16_t last = _entries.back().value;
     if (prevLogValue == last)
     {
-        Serial.println("[sensor_log] No change detected, skipping log");
         return;
     }
 
@@ -73,20 +71,16 @@ void SensorLog::logIfChanged(int16_t logValue)
         // Flip-detectie: als we flippen tussen 2 waarden, log niet
         int16_t prev = _entries[n - 2].value;
         mustLog = (logValue != last && logValue != prev);
-        Serial.printf("[sensor_log] Flip detection check prev:%d last:%d prevLogValue:%d logValue:%d mustLog:%d\n", (int)prev, (int)last, (int)prevLogValue, (int)logValue, (int)mustLog);
         if (prevLogValue == prev && !mustLog)
         {
-            Serial.println("[sensor_log] Flip detected, skipping log");
             return;
         }
     }
     if (_entries.empty() || last != prevLogValue || mustLog)
     {
-        Serial.println("[sensor_log] Value changed, logging new entry");
         log(prevLogValue);
         return;
     }
-    Serial.println("[sensor_log] No significant change, skipping log");
 }
 
 const std::vector<SensorLogEntry> &SensorLog::entries() const

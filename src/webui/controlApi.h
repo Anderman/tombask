@@ -8,3 +8,4 @@ void handlePostFan();
 void handlePostBoost();
 void handlePostLegionellaOn();
 void handlePostLegionellaHour();
+void handlePostLegionellaTemp();
