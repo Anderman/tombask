@@ -59,6 +59,16 @@ void handlePostLegionellaHour()
     server.send(204);
 }
 
+void handlePostLegionellaTemp()
+{
+    uint8_t legionellaTemp;
+    if (!getValue("LegionellaTemp", legionellaTemp))
+        return;
+    controlValues.LegionellaTemp = legionellaTemp;
+    ControlValueChanged = true;
+    server.send(204);
+}
+
 // Generieke getValue template voor elk type
 template<typename T>
 bool getValue(const char* key, T &value)

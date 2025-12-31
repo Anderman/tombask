@@ -5,13 +5,17 @@
   import Dialog from '../components/Dialog.svelte';
 
   let confirmBoost = $state(false);
+  let confirmLegionella = $state(false);
   let legionellaTemp = $state(0);
+  let legionellaTargetTemp = $state(60);
   let setPointTemp = $state(0);
   let topTemp = $state(0);
   let bottomTemp = $state(0);
   let power = $state(0);
   let fanOn = $state(false);
   let boostOn = $state(false);
+  let legionellaOn = $state(false);
+  let legionellaHour = $state(2);
   let paused = $state(false);
 
   onMount(() => {
@@ -19,12 +23,15 @@
       if (!paused) {
         const data = await apiGet('/api/status');
         legionellaTemp = data.LegionellaTemp ?? legionellaTemp;
+        legionellaTargetTemp = data.LegionellaTargetTemp ?? data.LegionellaTemp ?? legionellaTargetTemp;
         setPointTemp = data.SetpointTemp ?? setPointTemp;
         topTemp = data.TopTemp ?? topTemp;
         bottomTemp = data.BottomTemp ?? bottomTemp;
         power = data.Power ?? power;
         fanOn = !!data.Fan;
         boostOn = !!data.Boost;
+        legionellaOn = !!data.LegionellaOn;
+        legionellaHour = data.LegionellaHour ?? legionellaHour;
       }
     }
     pollStatus();
@@ -66,6 +73,43 @@
 
   function confirmBoostCancel() {
     confirmBoost = false;
+  }
+
+  async function toggleLegionella() {
+    if (!legionellaOn) {
+      confirmLegionella = true;
+    } else {
+      paused = true;
+      legionellaOn = false;
+      await apiPost('/api/legionellaOn', { LegionellaOn: false });
+      paused = false;
+    }
+  }
+
+  async function confirmLegionellaOk() {
+    confirmLegionella = false;
+    paused = true;
+    legionellaOn = true;
+    await apiPost('/api/legionellaOn', { LegionellaOn: true });
+    paused = false;
+  }
+
+  function confirmLegionellaCancel() {
+    confirmLegionella = false;
+  }
+
+  async function setLegionellaHour(val) {
+    paused = true;
+    legionellaHour = val;
+    await apiPost('/api/legionellaHour', { LegionellaHour: val });
+    paused = false;
+  }
+
+  async function setLegionellaTemp(val) {
+    paused = true;
+    legionellaTargetTemp = val;
+    await apiPost('/api/legionellaTemp', { LegionellaTemp: val });
+    paused = false;
   }
 </script>
 
@@ -119,11 +163,85 @@
 
   <div class="bg-[var(--bg-secondary)] rounded-[var(--radius-lg)] border border-[var(--border-color)] shadow-sm overflow-hidden">
     <div class="px-6 py-4 border-b border-[var(--border-color)]">
+      <h2 class="text-lg font-semibold text-[var(--text-primary)]">Legionella Prevention</h2>
+      <p class="text-sm text-[var(--text-muted)] mt-1">Weekly thermal disinfection settings</p>
+    </div>
+    <div class="p-6 space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <button
+            class="relative inline-flex h-7 w-12 items-center rounded-full transition-colors cursor-pointer
+            {legionellaOn ? 'bg-[var(--color-accent)]' : 'bg-[var(--bg-tertiary)]'}"
+            onclick={toggleLegionella}
+            role="switch"
+            aria-checked={legionellaOn}
+            aria-label="Toggle legionella prevention"
+          >
+            <span
+              class="inline-block h-5 w-5 transform rounded-full bg-white transition-transform shadow-sm
+              {legionellaOn ? 'translate-x-6' : 'translate-x-1'}"
+            ></span>
+          </button>
+          <span class="font-medium text-[var(--text-primary)]">
+            {legionellaOn ? 'Enabled' : 'Disabled'}
+          </span>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="text-sm text-[var(--text-secondary)]">Weekly hour:</span>
+          <div class="flex items-center gap-2">
+            <button
+              class="w-9 h-9 rounded-[var(--radius-md)] border border-[var(--border-color)] bg-[var(--bg-tertiary)] hover:bg-[var(--bg-hover)] flex items-center justify-center text-[var(--text-primary)] cursor-pointer disabled:opacity-50"
+              onclick={() => legionellaHour > 0 && setLegionellaHour(legionellaHour - 1)}
+              disabled={legionellaHour <= 0}
+            >
+              -
+            </button>
+            <span class="w-12 text-center font-semibold text-[var(--text-primary)]">{legionellaHour}:00</span>
+            <button
+              class="w-9 h-9 rounded-[var(--radius-md)] border border-[var(--border-color)] bg-[var(--bg-tertiary)] hover:bg-[var(--bg-hover)] flex items-center justify-center text-[var(--text-primary)] cursor-pointer disabled:opacity-50"
+              onclick={() => legionellaHour < 23 && setLegionellaHour(legionellaHour + 1)}
+              disabled={legionellaHour >= 23}
+            >
+              +
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <span class="text-sm text-[var(--text-secondary)]">Target temp:</span>
+          <div class="flex items-center gap-2">
+            <button
+              class="w-9 h-9 rounded-[var(--radius-md)] border border-[var(--border-color)] bg-[var(--bg-tertiary)] hover:bg-[var(--bg-hover)] flex items-center justify-center text-[var(--text-primary)] cursor-pointer disabled:opacity-50"
+              onclick={() => legionellaTargetTemp > 50 && setLegionellaTemp(legionellaTargetTemp - 1)}
+              disabled={legionellaTargetTemp <= 50}
+            >
+              -
+            </button>
+            <span class="w-12 text-center font-semibold text-[var(--text-primary)]">{legionellaTargetTemp}°C</span>
+            <button
+              class="w-9 h-9 rounded-[var(--radius-md)] border border-[var(--border-color)] bg-[var(--bg-tertiary)] hover:bg-[var(--bg-hover)] flex items-center justify-center text-[var(--text-primary)] cursor-pointer disabled:opacity-50"
+              onclick={() => legionellaTargetTemp < 80 && setLegionellaTemp(legionellaTargetTemp + 1)}
+              disabled={legionellaTargetTemp >= 80}
+            >
+              +
+            </button>
+          </div>
+        </div>
+        <div class="text-sm text-[var(--text-muted)]">
+          Current: {legionellaTemp.toFixed(1)}°C
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-[var(--bg-secondary)] rounded-[var(--radius-lg)] border border-[var(--border-color)] shadow-sm overflow-hidden">
+    <div class="px-6 py-4 border-b border-[var(--border-color)]">
       <h2 class="text-lg font-semibold text-[var(--text-primary)]">Temperature Sensors</h2>
       <p class="text-sm text-[var(--text-muted)] mt-1">Current readings from all sensors</p>
     </div>
     <div class="p-6">
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
         <div class="text-center p-4 rounded-[var(--radius-md)] bg-[var(--bg-tertiary)]">
           <div class="text-sm text-[var(--text-muted)] mb-1">Top</div>
           <div class="text-2xl font-bold text-[var(--text-primary)]">{topTemp.toFixed(1)}°C</div>
@@ -131,10 +249,6 @@
         <div class="text-center p-4 rounded-[var(--radius-md)] bg-[var(--bg-tertiary)]">
           <div class="text-sm text-[var(--text-muted)] mb-1">Bottom</div>
           <div class="text-2xl font-bold text-[var(--text-primary)]">{bottomTemp.toFixed(1)}°C</div>
-        </div>
-        <div class="text-center p-4 rounded-[var(--radius-md)] bg-[var(--bg-tertiary)]">
-          <div class="text-sm text-[var(--text-muted)] mb-1">Legionella</div>
-          <div class="text-2xl font-bold text-[var(--text-primary)]">{legionellaTemp.toFixed(1)}°C</div>
         </div>
         <div class="text-center p-4 rounded-[var(--radius-md)] bg-[var(--bg-tertiary)]">
           <div class="text-sm text-[var(--text-muted)] mb-1">Power</div>
@@ -150,5 +264,13 @@
     message="Are you sure you want to enable Boost? This will require an additional 2000 watts of power. Please ensure your installation can handle this load."
     onok={confirmBoostOk}
     oncancel={confirmBoostCancel}
+  />
+
+  <Dialog
+    bind:open={confirmLegionella}
+    type="confirm"
+    message="Are you sure you want to enable Legionella prevention? This will heat the tank to 60°C for disinfection. Make sure no hot water is being used during this time."
+    onok={confirmLegionellaOk}
+    oncancel={confirmLegionellaCancel}
   />
 </div>

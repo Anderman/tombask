@@ -8,4 +8,10 @@ bool parseJsonBody(JsonDocument &doc);
 void setupWebUi();
 void webUiLoop();
 extern WebServer server;
-#define SEND_CORS() server.sendHeader("Access-Control-Allow-Origin", "*")
+#define SEND_CORS()                                                                \
+    do                                                                             \
+    {                                                                              \
+        server.sendHeader("Access-Control-Allow-Origin", "*");                     \
+        server.sendHeader("Access-Control-Allow-Methods", "POST, OPTIONS");        \
+        server.sendHeader("Access-Control-Allow-Headers", "Content-Type, Accept"); \
+    } while (0)

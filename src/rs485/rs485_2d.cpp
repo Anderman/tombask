@@ -143,6 +143,11 @@ uint8_t get_2dFrame(uint8_t *buffer)
     previousFrame.TSetpoint2 = controlValues.LegionellaTemp + 100;
     previousFrame.Functions = controlValues.LegionellaOn ? previousFrame.Functions | 0x01 : previousFrame.Functions & ~0x01;
     previousFrame.LegionellaHour = controlValues.LegionellaHour;
+    Serial.printf("Preparing 2D frame: Setpoint=%d, LegionellaTemp=%d, LegionellaOn=%d, LegionellaHour=%d\n",
+           controlValues.SetpointTemp,
+           controlValues.LegionellaTemp,
+           controlValues.LegionellaOn ? 1 : 0,
+           controlValues.LegionellaHour);
 
     memcpy(buffer, &previousFrame, sizeof(Frame2D));
     return sizeof(Frame2D);
