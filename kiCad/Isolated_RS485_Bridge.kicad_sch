@@ -1,50 +1,502 @@
 (kicad_sch
-  (version 20231015)
-  (generator "kicad-9")
-  (uuid 11111111-aaaa-bbbb-cccc-000000000001)
-
-  (paper "A4")
-
-  (title_block
-    (title "Isolated RS485 WiFi Bridge")
-    (company "Custom Electronics")
-    (rev "1.0")
-    (date "2025-12-31")
-  )
-
-  # CONNECTORS (links)
-  (sheet
-    (at 30 120)
-    (size 80 60)
-    (uuid 22222222-aaaa-bbbb-cccc-000000000002)
-    (property "Sheet name" "Connectors")
-    (property "Sheet file" "Connectors.kicad_sch")
-  )
-
-  # POWER (na connectors)
-  (sheet
-    (at 150 120)
-    (size 80 60)
-    (uuid 33333333-aaaa-bbbb-cccc-000000000003)
-    (property "Sheet name" "Power")
-    (property "Sheet file" "Power.kicad_sch")
-  )
-
-  # RS485 (na power)
-  (sheet
-    (at 270 120)
-    (size 80 60)
-    (uuid 44444444-aaaa-bbbb-cccc-000000000004)
-    (property "Sheet name" "RS485")
-    (property "Sheet file" "RS485.kicad_sch")
-  )
-
-  # ESP32 (rechts)
-  (sheet
-    (at 390 120)
-    (size 80 60)
-    (uuid 55555555-aaaa-bbbb-cccc-000000000005)
-    (property "Sheet name" "ESP32")
-    (property "Sheet file" "ESP32.kicad_sch")
-  )
+	(version 20250114)
+	(generator "eeschema")
+	(generator_version "9.0")
+	(uuid "11111111-aaaa-bbbb-cccc-000000000001")
+	(paper "A4")
+	(title_block
+		(title "Isolated RS485 Bridge")
+		(date "2025-12-31")
+		(rev "1.0")
+	)
+	(lib_symbols)
+	(junction
+		(at 114.3 134.62)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "17c9b9e2-2ab5-4257-9f30-593774870ddd")
+	)
+	(junction
+		(at 170.18 134.62)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "d6bf2205-4d52-4ad5-8169-28ca43e1e45b")
+	)
+	(wire
+		(pts
+			(xy 238.76 134.62) (xy 170.18 134.62)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "01319abe-0238-4143-814a-29aed27c324d")
+	)
+	(wire
+		(pts
+			(xy 128.27 62.23) (xy 128.27 58.42)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1def6ad4-9834-47d8-9f0a-c67ed4c994be")
+	)
+	(wire
+		(pts
+			(xy 215.9 63.5) (xy 215.9 58.42)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2d2b7efb-9e95-4a8e-bb7b-6fd3bfe5a23d")
+	)
+	(wire
+		(pts
+			(xy 233.68 50.8) (xy 233.68 63.5)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "403d2851-f543-4a23-b0aa-55c1970858cc")
+	)
+	(wire
+		(pts
+			(xy 64.77 134.62) (xy 114.3 134.62)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "566e3b82-a0fb-4b0e-8220-f1e7c4fda80d")
+	)
+	(wire
+		(pts
+			(xy 170.18 130.81) (xy 170.18 134.62)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "781dbcd5-7086-4354-8acf-60c2a006b50d")
+	)
+	(wire
+		(pts
+			(xy 64.77 132.08) (xy 64.77 134.62)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9b2c47c3-b64f-4b8c-a6c9-068588cfb7a2")
+	)
+	(wire
+		(pts
+			(xy 196.85 91.44) (xy 210.82 91.44)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "bba4774a-a75e-49d3-9e3d-727c38b13b56")
+	)
+	(wire
+		(pts
+			(xy 238.76 129.54) (xy 238.76 134.62)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "bd32864b-371e-49b4-a912-f27517d66751")
+	)
+	(wire
+		(pts
+			(xy 115.57 50.8) (xy 233.68 50.8)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "bf16423d-f5d4-40b4-835d-92249f5c1861")
+	)
+	(wire
+		(pts
+			(xy 135.89 86.36) (xy 148.59 86.36)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c08a4e35-7eb6-4fac-98e8-df373155570b")
+	)
+	(wire
+		(pts
+			(xy 114.3 134.62) (xy 170.18 134.62)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "dd8d122e-91ac-40cf-9806-3c4e6c8786e8")
+	)
+	(wire
+		(pts
+			(xy 115.57 62.23) (xy 115.57 50.8)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e556d51f-942b-4fcd-a566-5fee1b6593e5")
+	)
+	(wire
+		(pts
+			(xy 85.09 87.63) (xy 93.98 87.63)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "eb9d7f84-32b8-4789-885d-a7698b9fa192")
+	)
+	(wire
+		(pts
+			(xy 114.3 132.08) (xy 114.3 134.62)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f60569a2-1d5d-4950-9548-bc7b06c2b5a2")
+	)
+	(wire
+		(pts
+			(xy 128.27 58.42) (xy 215.9 58.42)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f7a46e5e-6469-44c5-a4f4-fb9d2e864f2e")
+	)
+	(sheet
+		(at 93.98 62.23)
+		(size 41.91 69.85)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.254)
+			(type solid)
+			(color 72 72 72 1)
+		)
+		(fill
+			(color 45 55 255 0.0000)
+		)
+		(uuid "22222222-aaaa-bbbb-cccc-000000000002")
+		(property "Sheetname" "Power"
+			(at 93.98 61.4676 0)
+			(show_name yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "Power.kicad_sch"
+			(at 93.98 132.8654 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(pin "V_BUCK_IN" input
+			(at 135.89 86.36 0)
+			(uuid "2af3a8ed-2573-4034-8604-fc9680da812d")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "GND_BUS" input
+			(at 114.3 132.08 270)
+			(uuid "4db51b8a-650f-4576-9d2f-e8ae26c6837b")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "V_BUS_IN" input
+			(at 93.98 87.63 180)
+			(uuid "b9f9c951-a325-4d64-b5f3-7da6503974a7")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "BUS_IO" input
+			(at 128.27 62.23 90)
+			(uuid "72622ca7-2429-441e-8fef-dc14eb7cd7e0")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "USB_5V" input
+			(at 115.57 62.23 90)
+			(uuid "7bdf6326-1e83-4928-90d0-ff456f9f0b9e")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(instances
+			(project "Isolated_RS485_Bridge"
+				(path "/11111111-aaaa-bbbb-cccc-000000000001"
+					(page "2")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 38.1 61.91)
+		(size 46.99 70.17)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke
+			(width 0)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "33333333-aaaa-bbbb-cccc-000000000003")
+		(property "Sheetname" "RS485"
+			(at 48.26 60.96 0)
+			(show_name yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Sheetfile" "RS485.kicad_sch"
+			(at 48.26 133.35 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "GND_BUS" input
+			(at 64.77 132.08 270)
+			(uuid "884e54df-0607-40f4-a1ba-112d9a352fcf")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "V_BUS_IN" input
+			(at 85.09 87.63 0)
+			(uuid "35bfbd4a-5005-4660-8a40-3d58e9061a0f")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(instances
+			(project "Isolated_RS485_Bridge"
+				(path "/11111111-aaaa-bbbb-cccc-000000000001"
+					(page "3")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 210.82 63.5)
+		(size 55.88 66.04)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(stroke
+			(width 0)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "44444444-aaaa-bbbb-cccc-000000000004")
+		(property "Sheetname" "ESP32"
+			(at 246.1 62.55 0)
+			(show_name yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "ESP32.kicad_sch"
+			(at 210.82 134.0846 0)
+			(show_name yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(pin "3V3" input
+			(at 210.82 91.44 180)
+			(uuid "11343f13-e5a1-4a3c-8475-cbfe5152169e")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "GND_BUS" input
+			(at 238.76 129.54 270)
+			(uuid "f7bd85d5-8c57-4140-9895-734cf054d77f")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "USB_5V" input
+			(at 233.68 63.5 90)
+			(uuid "9418d469-4bbf-4ab3-9f21-1779fcd0559d")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "BUS_IO" input
+			(at 215.9 63.5 90)
+			(uuid "86070f0f-7952-4f0d-8585-06e6574855f9")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(instances
+			(project "Isolated_RS485_Bridge"
+				(path "/11111111-aaaa-bbbb-cccc-000000000001"
+					(page "4")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 148.59 63.5)
+		(size 48.26 67.31)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "92287510-018b-4e17-a674-f3897e0671e4")
+		(property "Sheetname" "Buck"
+			(at 148.59 62.7884 0)
+			(show_name yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "buck.kicad_sch"
+			(at 148.59 131.3946 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(pin "3V3" input
+			(at 196.85 91.44 0)
+			(uuid "0bbe406e-bbe1-4add-8bc3-14cef662c254")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "GND_BUS" input
+			(at 170.18 130.81 270)
+			(uuid "8bd4f8ca-79b0-46ff-88f8-1e6e14c7938d")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "V_BUCK_IN" input
+			(at 148.59 86.36 180)
+			(uuid "8db31ee5-be34-42a0-9480-6a7a45e55848")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(instances
+			(project "Isolated_RS485_Bridge"
+				(path "/11111111-aaaa-bbbb-cccc-000000000001"
+					(page "5")
+				)
+			)
+		)
+	)
+	(sheet_instances
+		(path "/"
+			(page "1")
+		)
+	)
+	(embedded_fonts no)
 )
