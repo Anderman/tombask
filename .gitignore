@@ -15,3 +15,5 @@ webui/dist/
 data/
 # Temporary files created by editors (e.g. backup/temp files)
 ~*
+# KiCad auto-generated backup folders
+kicad/**/*backups/

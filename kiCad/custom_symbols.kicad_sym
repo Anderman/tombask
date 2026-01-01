@@ -173,7 +173,8 @@
       )
     )
 
-    ;; Power pins
+     # Power pins
+
     (pin power_in (at -12 10 180) (length 2.54)
       (name "3V3" (effects (font (size 1.27 1.27))))
       (number "1" (effects (font (size 1.27 1.27)))))
@@ -181,16 +182,18 @@
       (name "GND" (effects (font (size 1.27 1.27))))
       (number "2" (effects (font (size 1.27 1.27)))))
 
-    ;; UART
-    (pin bidirectional (at 12 10 0) (length 2.54)
+     # UART
+     (pin bidirectional (at 12 10 0) (length 2.54)
+
       (name "TXD" (effects (font (size 1.27 1.27))))
       (number "20" (effects (font (size 1.27 1.27)))))
     (pin bidirectional (at 12 7 0) (length 2.54)
       (name "RXD" (effects (font (size 1.27 1.27))))
       (number "21" (effects (font (size 1.27 1.27)))))
 
-    ;; EN pin
-    (pin input (at -12 0 180) (length 2.54)
+     # EN pin
+     (pin input (at -12 0 180) (length 2.54)
+
       (name "EN" (effects (font (size 1.27 1.27))))
       (number "3" (effects (font (size 1.27 1.27)))))
   )
@@ -217,7 +220,8 @@
       )
     )
 
-    ;; Power
+     # Power
+
     (pin power_in (at -14 12 180) (length 2.54)
       (name "VCC" (effects (font (size 1.27 1.27))))
       (number "1" (effects (font (size 1.27 1.27)))))
@@ -225,15 +229,17 @@
       (name "GND" (effects (font (size 1.27 1.27))))
       (number "2" (effects (font (size 1.27 1.27)))))
 
-    ;; UART
-    (pin input (at -14 5 180) (length 2.54)
+     # UART
+     (pin input (at -14 5 180) (length 2.54)
+
       (name "DI" (effects (font (size 1.27 1.27))))
       (number "3" (effects (font (size 1.27 1.27)))))
     (pin output (at -14 2 180) (length 2.54)
       (name "RO" (effects (font (size 1.27 1.27))))
       (number "4" (effects (font (size 1.27 1.27)))))
 
-    ;; RS485 differential
+     # RS485 differential
+
     (pin bidirectional (at 14 5 0) (length 2.54)
       (name "A" (effects (font (size 1.27 1.27))))
       (number "18" (effects (font (size 1.27 1.27)))))
