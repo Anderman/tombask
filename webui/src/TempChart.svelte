@@ -16,7 +16,18 @@
   async function fetchAndRender() {
     loading = true;
     error = '';
-    const { dataBottom, dataTop } = await getData();
+    const { dataBottom, dataTop, sampledTimestamps } = await getData();
+
+    const hasRange = sampledTimestamps?.length >= 2;
+    const minT = hasRange ? sampledTimestamps[0] : null;
+    const maxT = hasRange ? sampledTimestamps[sampledTimestamps.length - 1] : null;
+    const spansMultipleDays =
+      hasRange &&
+      new Date(minT * 1000).toDateString() !== new Date(maxT * 1000).toDateString();
+
+    const tickTimeFmt = spansMultipleDays ? 'dd-MM HH:mm' : 'HH:mm:ss';
+    const tooltipFmt = spansMultipleDays ? 'dd-MM-yyyy HH:mm:ss' : 'HH:mm:ss';
+
     if (chart) chart.destroy();
     Chart.register(zoomPlugin);
     chart = new Chart(chartEl, {
@@ -72,12 +83,15 @@
           x: {
             type: 'time',
             time: {
-              unit: 'minute',
+              minUnit: 'second',
               displayFormats: {
-                minute: 'HH:mm:ss',
-                second: 'HH:mm:ss',
+                second: tickTimeFmt,
+                minute: tickTimeFmt,
+                hour: spansMultipleDays ? 'dd-MM HH:mm' : 'HH:mm',
+                day: 'dd-MM',
+                month: 'MMM yyyy',
               },
-              tooltipFormat: 'HH:mm:ss',
+              tooltipFormat: tooltipFmt,
             },
              title: { display: true, text: 'Time' },
             ticks: {
@@ -94,14 +108,34 @@
     let topEntries = (json.top || []).sort((a, b) => a.t - b.t);
     let bottomEntries = (json.bottom || []).sort((a, b) => a.t - b.t);
 
+    // Align start: begin at the later of the two start times
+    const topStart = topEntries.length ? topEntries[0].t : null;
+    const bottomStart = bottomEntries.length ? bottomEntries[0].t : null;
+    const commonStart =
+      topStart != null && bottomStart != null ? Math.max(topStart, bottomStart) : null;
+
+    if (commonStart != null) {
+      topEntries = topEntries.filter(e => e.t >= commonStart);
+      bottomEntries = bottomEntries.filter(e => e.t >= commonStart);
+    }
+
     const maxPoints = 1500;
-    const allTimestamps = [...new Set([...topEntries.map(e => e.t), ...bottomEntries.map(e => e.t)].sort((a, b) => a - b))];
+    let allTimestamps = [
+      ...new Set(
+        [...topEntries.map(e => e.t), ...bottomEntries.map(e => e.t)].sort((a, b) => a - b),
+      ),
+    ];
+
+    if (commonStart != null) {
+      allTimestamps = allTimestamps.filter(t => t >= commonStart);
+    }
+
     const sampledTimestamps = downsampleTimestamps(allTimestamps, maxPoints);
 
     const dataBottom = alignToTimestamps(bottomEntries, sampledTimestamps);
     const dataTop = alignToTimestamps(topEntries, sampledTimestamps);
 
-    return { dataBottom, dataTop };
+    return { dataBottom, dataTop, sampledTimestamps };
   }
 
   function downsampleTimestamps(timestamps, maxPoints) {

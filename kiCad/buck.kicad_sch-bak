@@ -876,16 +876,6 @@
 		)
 		(uuid "f51596c2-9220-47e3-bf1a-80acf4333c24")
 	)
-	(label "BST"
-		(at 81.28 99.06 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "83d5c6d9-d5ae-46f6-9c05-af5263ed93a4")
-	)
 	(label "GND"
 		(at 53.34 128.27 0)
 		(effects
@@ -895,16 +885,6 @@
 			(justify left bottom)
 		)
 		(uuid "f202cb19-fc06-424c-b6e7-7f3e730aaf15")
-	)
-	(label "SW"
-		(at 82.55 91.44 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "ff4e7e11-541a-4dfb-b0d3-384fa5b77a61")
 	)
 	(hierarchical_label "GND_BUS"
 		(shape input)

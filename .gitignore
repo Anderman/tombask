@@ -17,3 +17,26 @@ data/
 ~*
 # KiCad auto-generated backup folders
 kicad/**/*backups/
+kiCad/_autosave-Isolated_RS485_Bridge.kicad_pcb
+kiCad/fp-info-cache
+
+# KiCad / JLCPCB fabrication outputs
+**/jlcpcb/
+**/JLCPCB/
+**/*_jlcpcb.*
+**/*-jlcpcb.*
+
+# KiCad fabrication outputs (Gerbers)
+**/Gerbers/
+**/gerbers/
+**/gerber/
+
+# Optional: if gerbers are sometimes generated outside a dedicated folder
+**/*.gbr
+**/*.gb?
+**/*.gt?
+**/*.gm?
+**/*.gp?
+**/*.gko
+**/*.drl
+**/*.xln
