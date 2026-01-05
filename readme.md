@@ -24,70 +24,25 @@ Aansluiting Rs485 signal for wired controller on H1(pos) and H2(neg) of the XT3 
 ![alt text](<Rs485Connector.jpeg>)
 
 
-Parameters
-00 21 protocol
-01 E6 last error
-02 53 top
-03 53 bottom
-04 21 Environment
-05 25 discharge gas temp
-06 23 suction gas temp
-07 21/20 (defrost) (10 when on)
-08 --
-09 --
-10 400b (1) E Expansion valve
-11 00b (2) E
-12 02
-13 000 Fan speed (790 on)
-14 00 (comp) F
-15 (clock) 034c/350 (comp) 
-16 0143 
-17 0000
-18 034c
-19 0000
-20 0000
-21 015A
-22 --
-23 --
-24 000 (19 als die aanstaat)
-25 --
+App 
+## Control page
+
+![alt text](image.png)
+
+## temp history
+![alt text](image-1.png)
+
+## mtqq settings
+![alt text](image-2.png)
+
+## Logger (for debugging)
+![alt text](image-3.png)
+
+## wifi settings
+This is the wifimanger plugin
+
+![alt text](image-4.png)
 
 
-E00 4F:00 (off) defrost
-E01 y:01 memory
-E02 00 Celcius / fahrenheid
-E03 01 Electric heating
-E04 Gr:67
-E05 00
-E07 01
-E08 u7:01
-E09 HE:42
-E10 HE:07
-E12 00
-E13 80
-E14 00
-E15 EL:00
-E16 24:00 (clock)(2)
-E17 03
-E18 00
-E19 10
-E20 10
-E21 Ho:15
-E22 ][:01
-E23 200L
-E24 58 (comp)
-E25 750
-E26 dP:01
-E27 750
-
-F00 70 Legionella
-F01 -7 (comp + vacation)
-F02 -15 (elec heating + vacation)
-F03 05 (comp)(on)
-F04 01 (on/off)
-F05 00
-F06 Gn:00
-F12 CE:00
-F17 95 (comp)
-F18 900 (fan)
-F19 CL:00
+PCB
+![alt text](image-5.png)
