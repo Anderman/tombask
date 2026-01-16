@@ -87,7 +87,8 @@ static float extract_ss(const uint8_t *b){return b[44] >> 2;}                   
 static float extract_mm(const uint8_t *b){return b[44] << 4 & 0x30 | b[43] >> 4;}   //43 mmmm hhhh
 static float extract_hh(const uint8_t *b){return b[43] << 1 & 0x1E | b[42] >> 7;}   //42 hddd ddmm
 static float extract_dd(const uint8_t *b){return b[42] >> 2 & 0x1F; }               //41 mmyy yyyy
-static float extract_MM(const uint8_t *b){return b[42] << 2 & 0x0F | b[41] >> 6;}   //40 yyyy yyyy
+static float extract_MM(const uint8_t *b){return b[42] << 2 & 0x0F | b[41] >> 6;}   
+static float extract_YY(const uint8_t *b){ return float((b[41] & 0x3F) + 2010); }   
 //   yy yyyy yy
 // 0000 1111 1100 1000
 
@@ -127,6 +128,7 @@ static const SensorField2 sensorMap[] = {
     {"3c_39", "3c[39]", "", "", EXTRACT_BYTE(39)},
     {"3c_40", "3c[40] temp related?", "", "", EXTRACT_BYTE(40)},
     {"3c_41", "3c[41]", "", "", EXTRACT_BYTE(41)},
+    {"YY", "Year", "", "", extract_YY},
     {"MM", "Month", "", "", extract_MM},
     {"dd", "Day", "", "", extract_dd},
     {"hh", "Hours", "", "", extract_hh},
