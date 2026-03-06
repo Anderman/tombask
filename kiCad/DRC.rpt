@@ -1,0 +1,13 @@
+** Drc report for Isolated_RS485_Bridge.kicad_pcb **
+** Created on 2026-02-03T18:11:14+0100 **
+
+** Found 1 DRC violations **
+[lib_footprint_mismatch]: Footprint 'ESP32-S3-MINI-1' does not match copy in library 'PCM_Espressif'.
+    Local override; warning
+    @(166.1700 mm, 68.7200 mm): Footprint U3
+
+** Found 0 unconnected pads **
+
+** Found 0 Footprint errors **
+
+** End of Report **

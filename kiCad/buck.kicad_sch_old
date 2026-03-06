@@ -994,7 +994,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C5674"
+		(property "LCSC" "C5189822"
 			(at 128.27 102.87 0)
 			(effects
 				(font
@@ -1079,7 +1079,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C5674"
+		(property "LCSC" "C5189822"
 			(at 116.84 102.87 0)
 			(effects
 				(font
@@ -1158,7 +1158,7 @@
 				(hide yes)
 			)
 		)
-		(property "LCSC" "C56476"
+		(property "LCSC" "C52711259"
 			(at 90.17 95.25 0)
 			(effects
 				(font
@@ -1316,15 +1316,6 @@
 		)
 		(property "Description" "2A, 1.1MHz Buck DC/DC Converter, fixed 3.3V output voltage, TSOT-23-6"
 			(at 71.12 99.06 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "LCSC" "C780769"
-			(at 71.12 88.9 0)
 			(effects
 				(font
 					(size 1.27 1.27)

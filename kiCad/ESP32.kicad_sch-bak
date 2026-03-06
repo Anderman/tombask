@@ -2144,16 +2144,16 @@
 		(uuid "01ebabde-facd-4781-8ea8-afe089a94a59")
 	)
 	(no_connect
+		(at 102.87 77.47)
+		(uuid "02c6d8f1-0cf8-47e4-9254-85bc8dcfa4d4")
+	)
+	(no_connect
 		(at 72.39 74.93)
 		(uuid "07899a46-09d5-48d3-bf8c-20ad37c2ff82")
 	)
 	(no_connect
 		(at 102.87 90.17)
 		(uuid "197a261e-fbaf-4c1d-8187-66037769b9a8")
-	)
-	(no_connect
-		(at 102.87 82.55)
-		(uuid "1e0d6226-58a2-4b05-9199-e8f11186a07e")
 	)
 	(no_connect
 		(at 72.39 120.65)
@@ -2445,16 +2445,6 @@
 	)
 	(wire
 		(pts
-			(xy 107.95 77.47) (xy 102.87 77.47)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "a2568141-51a1-4af7-9530-ee211331d92e")
-	)
-	(wire
-		(pts
 			(xy 57.15 69.85) (xy 72.39 69.85)
 		)
 		(stroke
@@ -2525,6 +2515,16 @@
 	)
 	(wire
 		(pts
+			(xy 102.87 82.55) (xy 107.95 82.55)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f562651b-16ad-4650-acfb-59a4b7ba37f8")
+	)
+	(wire
+		(pts
 			(xy 87.63 55.88) (xy 87.63 64.77)
 		)
 		(stroke
@@ -2553,16 +2553,6 @@
 		)
 		(uuid "2549c3f0-b70d-4ed7-a432-3acf926a1d95")
 	)
-	(label "D+"
-		(at 107.95 80.01 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "43b5b6a7-c07c-4529-b370-99a7a624277f")
-	)
 	(label "GND"
 		(at 46.99 130.81 0)
 		(effects
@@ -2582,6 +2572,26 @@
 			(justify left bottom)
 		)
 		(uuid "598dc38f-610c-4f81-8b91-c34903a4ea67")
+	)
+	(label "D+"
+		(at 107.95 82.55 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "7090f523-e859-4e02-bc78-25d532429c18")
+	)
+	(label "D-"
+		(at 107.95 80.01 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "79528702-dfd5-41b1-85f0-60708ff99bce")
 	)
 	(label "BUS_RX"
 		(at 102.87 95.25 0)
@@ -2622,16 +2632,6 @@
 			(justify left bottom)
 		)
 		(uuid "b6739cde-8644-4845-8798-6d65557ad5aa")
-	)
-	(label "D-"
-		(at 107.95 77.47 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "c13f34f4-30d7-4a3e-bdb2-472f42ce871a")
 	)
 	(label "BUS_RX"
 		(at 59.69 77.47 0)
