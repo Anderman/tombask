@@ -1,38 +1,26 @@
 #include <FS.h>
-#include <SPIFFS.h>
 #include <ArduinoJson.h>
 #include <Preferences.h>
 #include "sensor_log.h"
-#include <algorithm>
 #include <time.h>
 #include <set>
 
 // Forward declarations for logs in each frame file
 SensorLog topTempLog("TTop");
 SensorLog bottomTempLog("TBottom");
-
-// Add more externs as needed for other frame logs (e.g., 2d, 1c, etc.)
-
-void registerAllSensorLogs()
-{
-    registerSensorLog(&topTempLog);
-    registerSensorLog(&bottomTempLog);
-    // Add more registerSensorLog calls for other logs here
-}
-
-static std::vector<SensorLog *> _allLogs;
+static SensorLog *const allLogs[] = {&topTempLog, &bottomTempLog};
 
 SensorLog::SensorLog(const char *name, size_t maxEntries)
-    : _maxEntries(maxEntries), _name(name) {}
+    : _maxEntries(maxEntries), name(name) {}
 
 void SensorLog::log(int16_t value)
 {
     u_int32_t timestamp = time(nullptr); // epoch seconds
-    while (_entries.size() >= _maxEntries)
+    while (entries.size() >= _maxEntries)
     {
-        _entries.erase(_entries.begin()); // ringbuffer: verwijder oudste
+        entries.erase(entries.begin()); // ringbuffer: verwijder oudste
     }
-    _entries.push_back({timestamp, value});
+    entries.push_back({timestamp, value});
 }
 
 void SensorLog::logIfChanged(int16_t logValue)
@@ -49,14 +37,14 @@ void SensorLog::logIfChanged(int16_t logValue)
         return;
     }
     const int16_t prevLogValue = _lastValues[_lastValues.size() - 2];
-    size_t n = _entries.size();
+    size_t n = entries.size();
     if (n == 0)
     {
         log(prevLogValue);
         return;
     }
 
-    int16_t last = _entries.back().value;
+    int16_t last = entries.back().value;
     if (prevLogValue == last)
     {
         return;
@@ -69,79 +57,37 @@ void SensorLog::logIfChanged(int16_t logValue)
     if (n >= 2 && uniqueVals.size() != 1)
     {
         // Flip-detectie: als we flippen tussen 2 waarden, log niet
-        int16_t prev = _entries[n - 2].value;
+        int16_t prev = entries[n - 2].value;
         mustLog = (logValue != last && logValue != prev);
         if (prevLogValue == prev && !mustLog)
         {
             return;
         }
     }
-    if (_entries.empty() || last != prevLogValue || mustLog)
+    if (entries.empty() || last != prevLogValue || mustLog)
     {
         log(prevLogValue);
         return;
     }
 }
 
-const std::vector<SensorLogEntry> &SensorLog::entries() const
-{
-    return _entries;
-}
-
-void SensorLog::clear()
-{
-    _entries.clear();
-}
-
-const char *SensorLog::getName() const
-{
-    return _name;
-}
-
-void registerSensorLog(SensorLog *log)
-{
-    if (std::find(_allLogs.begin(), _allLogs.end(), log) == _allLogs.end())
-        _allLogs.push_back(log);
-}
-
-SensorLog *getSensorLog(const char *name)
-{
-    for (auto *log : _allLogs)
-    {
-        if (strcmp(log->getName(), name) == 0)
-            return log;
-    }
-    return nullptr;
-}
-
-const std::vector<SensorLog *> &allSensorLogs()
-{
-    return _allLogs;
-}
-
 // Helper: log opslaan in NVS (Preferences) per log
 void saveAllSensorLogs()
 {
     Preferences prefs;
-    for (auto *log : allSensorLogs())
+    for (auto *log : allLogs)
     {
-        String nvsKey = log->getName();
+        String nvsKey = log->name;
         if (!prefs.begin(nvsKey.c_str(), false))
         {
             Serial.print("[sensor_log] ERROR: NVS open failed for namespace: ");
             Serial.println(nvsKey);
             continue;
         }
-        size_t n = log->_entries.size();
-        if (n > 0)
+        size_t n = log->entries.size();
         {
-            prefs.putBytes("data", log->_entries.data(), n * sizeof(SensorLogEntry));
+            prefs.putBytes("data", log->entries.data(), n * sizeof(SensorLogEntry));
             prefs.putUInt("count", n);
-        }
-        else
-        {
-            prefs.remove("data");
-            prefs.putUInt("count", 0);
         }
         prefs.end();
     }
@@ -151,9 +97,9 @@ void saveAllSensorLogs()
 void loadAllSensorLogs()
 {
     Preferences prefs;
-    for (auto *log : allSensorLogs())
+    for (auto *log : allLogs)
     {
-        String nvsKey = log->getName();
+        String nvsKey = log->name;
         if (!prefs.begin(nvsKey.c_str(), true))
         {
             Serial.print("[sensor_log] ERROR: NVS open failed for namespace: ");
@@ -161,11 +107,11 @@ void loadAllSensorLogs()
             continue;
         }
         size_t n = prefs.getUInt("count", 0);
-        log->_entries.clear();
+        log->entries.clear();
         if (n > 0)
         {
-            log->_entries.resize(n);
-            prefs.getBytes("data", log->_entries.data(), n * sizeof(SensorLogEntry));
+            log->entries.resize(n);
+            prefs.getBytes("data", log->entries.data(), n * sizeof(SensorLogEntry));
         }
         Serial.printf("[sensor_log] Loaded %u entries for log ", n);
         Serial.println(nvsKey);

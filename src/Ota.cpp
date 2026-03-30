@@ -4,6 +4,6 @@
 void setupOTA()
 {
     ArduinoOTA.setHostname(HOSTNAME);
-    ArduinoOTA.setPasswordHash(OTA_HASH);
+    ArduinoOTA.setPassword(OTA_PASSWORD);
     ArduinoOTA.begin();
 }

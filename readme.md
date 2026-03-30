@@ -1,7 +1,7 @@
 Tosot (Gree) Hombask 200Liter
 
 The signal is custom rs485
-![alt text](<scope.png>)
+![RS485 scope capture](docs/images/scope.png)
 
 All message send
 ```
@@ -21,28 +21,28 @@ To write byte 0x08 must be 0x02
 
 
 Aansluiting Rs485 signal for wired controller on H1(pos) and H2(neg) of the XT3 connector
-![alt text](<Rs485Connector.jpeg>)
+![RS485 connector](docs/images/Rs485Connector.jpeg)
 
 
 App 
 ## Control page
 
-![alt text](image.png)
+![Control page](docs/images/image.png)
 
 ## temp history
-![alt text](image-1.png)
+![Temperature history](docs/images/image-1.png)
 
 ## mtqq settings
-![alt text](image-2.png)
+![MQTT settings](docs/images/image-2.png)
 
 ## Logger (for debugging)
-![alt text](image-3.png)
+![Logger](docs/images/image-3.png)
 
 ## wifi settings
 This is the wifimanger plugin
 
-![alt text](image-4.png)
+![WiFi settings](docs/images/image-4.png)
 
 
 PCB
-![alt text](image-5.png)
+![PCB](docs/images/image-5.png)

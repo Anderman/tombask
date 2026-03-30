@@ -6,14 +6,17 @@
 // List all NVS keys in the default namespace using Preferences API
 void listNvsKeys()
 {
-    nvs_iterator_t it = nvs_entry_find("nvs", NULL, NVS_TYPE_ANY);
-    while (it != NULL)
+    nvs_iterator_t it = nullptr;
+    esp_err_t err = nvs_entry_find("nvs", nullptr, NVS_TYPE_ANY, &it);
+    while (err == ESP_OK && it != nullptr)
     {
         nvs_entry_info_t info;
         nvs_entry_info(it, &info);
         Serial.printf("Key: %s, Type: %d, Namespace: %s\n", info.key, info.type, info.namespace_name);
-        it = nvs_entry_next(it);
+        err = nvs_entry_next(&it);
     }
+    if (it)
+        nvs_release_iterator(it);
 }
 
 // Delete a single NVS key by name
@@ -29,8 +32,9 @@ void deleteNvsKey(const char *key)
 void deleteNvsKeysByPrefix(const char *prefix)
 {
     size_t prefixLen = std::strlen(prefix);
-    nvs_iterator_t it = nvs_entry_find(NULL, "_", NVS_TYPE_ANY);
-    while (it)
+    nvs_iterator_t it = nullptr;
+    esp_err_t err = nvs_entry_find("nvs", "_", NVS_TYPE_ANY, &it);
+    while (err == ESP_OK && it)
     {
         nvs_entry_info_t info;
         nvs_entry_info(it, &info);
@@ -39,8 +43,10 @@ void deleteNvsKeysByPrefix(const char *prefix)
             printf("Deleting NVS key: %s\n", info.key);
             deleteNvsKey(info.key);
         }
-        it = nvs_entry_next(it);
+        err = nvs_entry_next(&it);
     }
+    if (it)
+        nvs_release_iterator(it);
 }
 #include "storage.h"
 

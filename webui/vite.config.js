@@ -4,11 +4,12 @@ import tailwindcss from '@tailwindcss/vite';
 
 // Build output tuned for embedded serving:
 // - stable filenames (no hashes)
-// - everything in dist/
+// - build directly into ../data for PlatformIO buildfs
 export default defineConfig({
   plugins: [svelte(), tailwindcss()],
   build: {
-    outDir: 'dist',
+    outDir: '../data',
+    emptyOutDir: true,
     assetsDir: 'assets',
     // Debug-friendly build (keep source maps, avoid minifier surprises)
     sourcemap: false,

@@ -13,6 +13,7 @@
 #include "../timesync/timesync_api.h"
 #include "webui/temp_logs_api.h"
 #include "webui/dayahead_api.h"
+#include "webui/updateApi.h"
 #include <SPIFFS.h>
 
 WebServer server(80);
@@ -45,6 +46,7 @@ void setupWebUi()
 
     // temperatuur log API
     addGetEndpoint("/api/templogs", handleGetTempLogs);
+    addGetEndpoint("/api/reboot", handleGetReboot);
 
     // day-ahead prices API
     addGetEndpoint("/api/dayahead", handleGetDayAheadPrices);
@@ -54,6 +56,9 @@ void setupWebUi()
 
     // status endpoint
     addGetEndpoint("/api/status", handleGetStatus);
+    addGetEndpoint("/api/version", handleGetVersion);
+    addGetEndpoint("/api/update", handleGetUpdateStatus);
+    addPostEndpoint("/api/update/check", handlePostUpdateCheck);
 
     addPostEndpoint("/api/setpoint", handlePostSetpoint);
     addPostEndpoint("/api/fan", handlePostFan);

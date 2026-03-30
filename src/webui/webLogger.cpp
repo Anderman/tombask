@@ -1,6 +1,7 @@
 #include <WebServer.h>
 #include "webui.h"
 #include "webLogger.h"
+#include <WiFiClient.h>
 
 static WiFiClient sseClient;
 

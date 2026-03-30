@@ -1,4 +1,4 @@
-// Sla alle logs op naar SPIFFS/NVS
+// Sla alle logs op naar NVS
 #pragma once
 #include <Arduino.h>
 #include <vector>
@@ -12,7 +12,6 @@ struct SensorLogEntry
 
 void saveAllSensorLogs();
 void loadAllSensorLogs();
-void registerAllSensorLogs();
 class SensorLog
 {
     friend void saveAllSensorLogs();
@@ -20,21 +19,12 @@ class SensorLog
 
 public:
     SensorLog(const char *name, size_t maxEntries = 256);
-    void log(int16_t value);
-    // Only logs if value changed since last log
     void logIfChanged(int16_t value);
-    const std::vector<SensorLogEntry> &entries() const;
-    void clear();
-    const char *getName() const;
+    std::vector<SensorLogEntry> entries;
+    const char *name;
 
 protected:
-    std::vector<SensorLogEntry> _entries;
+    void log(int16_t value);
     size_t _maxEntries;
-    const char *_name;
-     std::vector<int16_t> _lastValues;
+    std::vector<int16_t> _lastValues;
 };
-
-// Globale registry voor logs
-void registerSensorLog(SensorLog *log);
-SensorLog *getSensorLog(const char *name);
-const std::vector<SensorLog *> &allSensorLogs();

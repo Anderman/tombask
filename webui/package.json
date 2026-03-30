@@ -5,10 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && rm -rf ../data && cp -R dist ../data ",
-    "uploadfs": "pnpm build && cd .. && pio run -t uploadfs",
+    "build": "pnpm build:dist && node scripts/sync-data.mjs",
     "build:dist": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "release": "node ../scripts/release-s3.mjs"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.18",

@@ -11,8 +11,8 @@
 #include "sensors.h"
 #include "settings.h"
 
-// ESP32-C3 only has UART0/1 available via HardwareSerial (0/1)
 static HardwareSerial RS485(1);
+static constexpr uint32_t RS485_RESPONSE_DELAY_US = 7000;
 static uint8_t buffer[0x48];
 static int bufferPos = 0;
 static uint8_t length = 8;
@@ -22,11 +22,19 @@ static void frameReader();
 static bool formatFrameLine(const uint8_t *data, size_t len, char *out, size_t outSize);
 static uint16_t crc16_modbus(const uint8_t *data, size_t len);
 static bool write_1c_next = false;
+
 void setupRs485()
 {
     buffer[0] = 0x7e;
     buffer[1] = 0x7e;
+
+    pinMode(DE_RE_PIN, OUTPUT);
+    digitalWrite(DE_RE_PIN, LOW);
     RS485.begin(9600, SERIAL_8N1, RX_PIN, TX_PIN);
+    Serial.printf("[rs485] begin 9600 8N1 rx=IO%u tx=IO%u de_re=IO%u (uart1 half-duplex)\n",
+                  (unsigned)RX_PIN,
+                  (unsigned)TX_PIN,
+                  (unsigned)DE_RE_PIN);
 }
 
 void rs485Loop()
@@ -34,8 +42,6 @@ void rs485Loop()
     while (RS485.available())
     {
         uint8_t c = RS485.read();
-
-        static int bufferPos = 0;
         if (bufferPos == 0 && c == 0x7E)
         {
             bufferPos++;
@@ -57,8 +63,6 @@ void rs485Loop()
                 const bool crcOk = formatFrameLine(buffer, length, line, sizeof(line));
                 Serial.println(line);
                 webLoggerWriteLine(line);
-                if (buffer[3] == 0x01 && buffer[8] != 0x01)
-                {}
                 if (crcOk)
                 {
                     if (buffer[2] == 0xf0 && buffer[3] == 0xf0)
@@ -67,7 +71,7 @@ void rs485Loop()
                     }
                     if (ControlValueChanged && buffer[2] == 0x02 && buffer[3] == 0xf0 && buffer[5] == 0x04)
                     {
-                        delay(6);
+                        delayMicroseconds(RS485_RESPONSE_DELAY_US);
                         if (!write_1c_next)
                         {
                             const uint8_t len = get_2dFrame(buffer);
@@ -94,7 +98,15 @@ void WriteFrame(const uint8_t len, const bool isLast)
     buffer[len - 3] = crc & 0xFF;           // lage byte
     buffer[len - 2] = (crc >> 8) & 0xFF;    // hoge byte
     buffer[len - 1] = isLast ? 0x55 : 0x00; // stopbyte
+    digitalWrite(DE_RE_PIN, HIGH);
+    delayMicroseconds(100);
     RS485.write(buffer, len);
+    RS485.flush();
+    delayMicroseconds(100);
+    digitalWrite(DE_RE_PIN, LOW);
+    char txLine[3 * 0x48 + 32];
+    formatFrameLine(buffer, len, txLine, sizeof(txLine));
+    webLoggerWriteLine(txLine);
     write_1c_next = !isLast;
 }
 

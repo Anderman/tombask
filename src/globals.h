@@ -1,6 +1,9 @@
 #pragma once
 #include <PubSubClient.h>
-static const byte TX_PIN  = 8; // XIAO D8 = GPIO8 (ESP TX -> RS485 module RX/DI)
-static const byte RX_PIN  = 9; // XIAO D9 = GPIO9 (ESP RX <- RS485 module TX/RO)
+
+static constexpr uint8_t TX_PIN = 12;    // ESP TX -> RS485 module RX/DI
+static constexpr uint8_t RX_PIN = 21;    // ESP RX <- RS485 module TX/RO
+static constexpr uint8_t DE_RE_PIN = 18; // ESP DE/RE -> RS485 transceiver direction control
+static constexpr uint8_t STATUS_LED_PIN = 45;
 
 extern PubSubClient mqttClient;

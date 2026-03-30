@@ -7,12 +7,14 @@
 #include "mqtt/setup.h"
 #include "mqtt/mqttLoop.h"
 #include "Ota.h"
+#include "ota/auto_update.h"
 #include "wifiSetup.h"
 #include "rs485/rs485.h"
 #include "storage/storage.h"
 #include "storage/sensor_log.h"
 #include "webui/webui.h"
 #include "rs485/settings.h"
+#include "status_led.h"
 
 // ==== GLOBALS ====
 WiFiClient espClient;
@@ -25,9 +27,13 @@ void setup()
   delay(2000);
   Serial.println();
   Serial.println("[tombask] boot");
+
+  statusLedSetup();
+  // Boot indication (dim blue)
+  statusLedSetRgb(0, 0, 16);
+
   loadConfig();
   listNvsKeys();
-  registerAllSensorLogs(); // Central registration for all logs
   loadAllSensorLogs();
   Serial.print("[tombask] deviceId=");
   Serial.println(deviceId);
@@ -35,21 +41,26 @@ void setup()
   Serial.print("setupWifi done, IP=");
   Serial.print(WiFi.localIP());
   Serial.println();
+  setupOTA();
   setupWebUi();
+  setupAutoUpdate();
   setupWifiConfigPage();
   Serial.print("[tombask] webui started: http://");
   Serial.print(WiFi.localIP());
   Serial.println("/");
-  setupOTA();
   setupMqtt();
   setupRs485();
   Serial.println("[tombask] setup done");
+
+  // Ready indication (dim green)
+  statusLedSetRgb(0, 16, 0);
 }
 
 void loop()
 {
   static unsigned long lastLogSave = 0;
   ArduinoOTA.handle();
+  autoUpdateLoop();
   webUiLoop();
   wifiManagerLoop();
   mqttLoop();
